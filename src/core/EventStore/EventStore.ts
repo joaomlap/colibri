@@ -5,7 +5,7 @@ import {
 } from "./IEventStore";
 import axios, { AxiosRequestConfig } from "axios";
 import { IEvent } from "core/domain/IEvent";
-import { serialiseEvent } from "core/eventStore/helpers/serialiseEvent";
+import { serialiseEvent } from "./helpers/serialiseEvent";
 
 type EventStoreCredentials = {
   username: string;
@@ -22,7 +22,7 @@ export default class EventStore implements IEventStore {
     this.credentials = credentials;
   }
 
-  async saveEvents(aggregateId: string, events: IEvent[]) {
+  async publish(aggregateId: string, events: IEvent[]) {
     const serialisedEvents = events.map(e => serialiseEvent(e));
 
     return this.writeToEventStream(aggregateId, serialisedEvents);
@@ -42,11 +42,14 @@ export default class EventStore implements IEventStore {
         username: "admin",
         password: "changeit"
       },
-      data: JSON.stringify(events)
+      data: events
     } as AxiosRequestConfig;
+    console.log("JOAO", events, options);
 
     try {
+      console.log("JOOOO");
       const response = await axios.request(options);
+      console.log("JOOA", { response });
 
       switch (response.status) {
         case Ok.statusCode:
@@ -62,25 +65,25 @@ export default class EventStore implements IEventStore {
       }
     } catch (err) {
       return {
-        statusCode: 500,
+        statusCode: 5343,
         message: err
       };
     }
   }
 }
 
-class Ok implements IEventStoreResponse {
+export class Ok implements IEventStoreResponse {
   static statusCode = 201;
   statusCode = 201;
   message = "New stream created.";
 }
-class TemporarilyRedirected implements IEventStoreResponse {
+export class TemporarilyRedirected implements IEventStoreResponse {
   static statusCode = 307;
   statusCode = 307;
   message = "Temporarily Redirect.";
 }
-class InvalidRequest implements IEventStoreResponse {
-  static statusCode = 201;
-  statusCode = 201;
+export class InvalidRequest implements IEventStoreResponse {
+  static statusCode = 400;
+  statusCode = 400;
   message = "Write request body invalid.";
 }

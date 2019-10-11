@@ -1,5 +1,5 @@
 import Express from "express";
-import IController from "core/application/IController";
+import { IController } from "core/application/IController";
 
 export default class App {
   public app: Express.Application;

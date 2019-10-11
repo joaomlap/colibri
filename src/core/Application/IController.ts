@@ -1,6 +1,6 @@
-import Express, { Request } from "express";
+import Express from "express";
 
-export default interface IController {
+export interface IController {
   path: string;
   router: Express.Router;
 

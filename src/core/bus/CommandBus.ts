@@ -4,7 +4,7 @@ import { Type } from "core/utils/Type";
 import {
   TooManyCommandHandlersException,
   CommandHandlerNotFoundException
-} from "core/exceptions";
+} from "../exceptions";
 
 type CommandType = Type<ICommand>;
 
@@ -22,10 +22,13 @@ export class CommandBus {
     }
 
     this.handlers.set(commandClass, handler);
+
+    console.log(this.handlers);
   }
 
   send<T extends ICommand>(command: T): Promise<any> {
-    const commandClass = Object.getPrototypeOf(command);
+    const commandPrototype = Object.getPrototypeOf(command);
+    const commandClass = commandPrototype && commandPrototype.constructor;
     const handler = this.handlers.get(commandClass);
 
     if (!handler) {

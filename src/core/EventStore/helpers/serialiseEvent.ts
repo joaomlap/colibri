@@ -7,6 +7,11 @@ export function serialiseEvent(event: IEvent): IEventStoreEvent {
   const eventType = event.constructor.name;
   const data = event;
 
+  console.log("WERNEONVOE", {
+    eventId,
+    eventType,
+    data
+  });
   return {
     eventId,
     eventType,

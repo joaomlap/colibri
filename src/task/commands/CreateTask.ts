@@ -11,7 +11,6 @@ export class CreateTaskHandler implements ICommandHandler<CreateTaskCommand> {
   constructor(private readonly repository: TaskRepository) {}
 
   execute(command: CreateTaskCommand) {
-    this.repository.createTask(command.taskDto);
-    return new Promise(resolve => resolve("a"));
+    return this.repository.createTask(command.taskDto);
   }
 }

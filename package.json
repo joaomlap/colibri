@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "start": "ts-node-dev --respawn --transpileOnly src/index.ts",
+    "start": "ts-node-dev --respawn --transpile-only src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 0"
   },
   "keywords": [],
@@ -16,7 +16,6 @@
     "@types/node": "^12.7.8",
     "prettier": "^1.18.2",
     "ts-node": "^8.4.1",
-    "ts-node-dev": "^1.0.0-pre.43",
     "typescript": "^3.6.3"
   },
   "dependencies": {
@@ -26,6 +25,7 @@
     "express": "^4.17.1",
     "feedparser": "^2.2.9",
     "rxjs": "^6.5.3",
+    "ts-node-dev": "^1.0.0-pre.43",
     "uuid": "^3.3.3"
   }
 }

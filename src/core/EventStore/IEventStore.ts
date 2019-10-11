@@ -7,7 +7,7 @@ export interface IEventStoreResponse {
 
 export interface IEventStore {
   // createEventStream: () => Event[];
-  saveEvents: (
+  publish: (
     aggregateId: string,
     events: IEvent[]
   ) => Promise<IEventStoreResponse>;
