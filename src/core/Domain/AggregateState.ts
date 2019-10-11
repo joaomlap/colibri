@@ -1,4 +1,4 @@
-export default interface AggregateState {
+export interface AggregateState {
   handlers: Function[];
   registerHandler: () => void;
   unregisterHandler: () => void;

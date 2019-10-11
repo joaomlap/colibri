@@ -1,9 +1,23 @@
-enum Response { Ok, Error };
+import { IEvent } from "core/domain/IEvent";
+
+export interface IEventStoreResponse {
+  statusCode: number;
+  message: string;
+}
 
 export interface IEventStore {
   // createEventStream: () => Event[];
-  writeToEventStream: (event: Event, streamId: string) => Response;
+  saveEvents: (
+    aggregateId: string,
+    events: IEvent[]
+  ) => Promise<IEventStoreResponse>;
   // publishEvent: (event: Event) => Response;
   // getEventStream: () => Event[];
   // more
+}
+
+export interface IEventStoreEvent {
+  eventId: string;
+  eventType: string;
+  data: object;
 }

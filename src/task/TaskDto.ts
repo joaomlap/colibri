@@ -3,9 +3,9 @@ export class TaskDetails {
   label: string;
 }
 
-export class Task {
+export class TaskDto {
   id: string;
-  type: TaskType;
+  type: string;
 }
 
 export class TaskType {
