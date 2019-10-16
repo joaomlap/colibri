@@ -1,5 +1,5 @@
 import { IEvent } from "core/domain/IEvent";
-import { IEventStoreEvent } from "core/publisher/EventStore";
+import { IEventStoreEvent } from "core/event-store/EventStore";
 import uuid = require("uuid");
 
 export function serialiseEvent(event: IEvent): IEventStoreEvent {
@@ -7,11 +7,6 @@ export function serialiseEvent(event: IEvent): IEventStoreEvent {
   const eventType = event.constructor.name;
   const data = event;
 
-  console.log("WERNEONVOE", {
-    eventId,
-    eventType,
-    data
-  });
   return {
     eventId,
     eventType,

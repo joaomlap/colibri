@@ -1,23 +1,33 @@
 import { Aggregate } from "../core/domain/Aggregate";
-import { TaskDto } from "./TaskDto";
+import { Task, TaskType, TaskStatus, TaskUrgency } from "./TaskTypes";
 import { TaskCreated } from "./events/TaskCreated";
+import { IEvent } from "core/domain/IEvent";
+import uuid = require("uuid");
 
 export class TaskAggregate extends Aggregate {
   id: string;
-  type: string;
-  status: string;
+  type: TaskType;
+  status: TaskStatus;
+  urgency: TaskUrgency;
 
-  constructor(public taskDto: TaskDto) {
+  constructor(eventStream: IEvent[] = []) {
     super();
 
-    this.applyEvent(new TaskCreated(taskDto));
+    // apply functions
+    this.mutators.set(TaskCreated, this.applyTaskCreated);
+
+    // construct from event stream
+    eventStream.forEach(event => this.apply(event));
   }
 
-  apply<TaskCreated>(taskCreated: TaskCreated): void;
-  apply<TaskCancelled>(taskCancelled: TaskCancelled): void;
-
-  apply(taskCreated: TaskCreated) {
-    this.id = taskCreated.taskDto.id;
-    this.type = taskCreated.taskDto.type;
+  createTask(task: Task) {
+    this.applyEvent(new TaskCreated(task));
   }
+
+  applyTaskCreated = (task: Task) => {
+    this.id = uuid.v4();
+    this.type = task.type;
+    this.status = task.status;
+    this.urgency = task.urgency;
+  };
 }

@@ -1,6 +1,6 @@
 import { IEvent } from "core/domain/IEvent";
-import { TaskDto } from "../TaskDto";
+import { Task } from "../TaskTypes";
 
 export class TaskCreated implements IEvent {
-  constructor(public readonly taskDto: TaskDto) {}
+  constructor(public task: Task) {}
 }

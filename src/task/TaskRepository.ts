@@ -1,10 +1,17 @@
 import { Repository } from "../core/domain/Repository";
 import { TaskAggregate } from "./TaskAggregate";
-import { TaskDto } from "./TaskDto";
+import { Task, TaskStatus } from "./TaskTypes";
 
 export class TaskRepository extends Repository {
-  createTask(taskDto: TaskDto) {
-    const task = new TaskAggregate(taskDto);
+  createTask(taskData: Task) {
+    const task = new TaskAggregate();
+    task.createTask(taskData);
+    console.log("CREATE", taskData);
+
     return this.save(task);
+  }
+
+  cancelTask(id: string, taskStatus: TaskStatus) {
+    this.load(id);
   }
 }

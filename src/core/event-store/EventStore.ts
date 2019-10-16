@@ -2,6 +2,8 @@ import { IResponse } from "../application/IResponse";
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import { IEvent } from "core/domain/IEvent";
 import { serialiseEvent } from "./helpers/serialiseEvent";
+import feedParser from "feedparser";
+import { IEventStore } from "./IEventStore";
 
 type EventStoreCredentials = {
   username: string;
@@ -14,7 +16,7 @@ export interface IEventStoreEvent {
   data: object;
 }
 
-export class EventStore {
+export class EventStore implements IEventStore {
   url: string;
   credentials: EventStoreCredentials;
   port: number = 2113;
@@ -26,8 +28,12 @@ export class EventStore {
 
   async publish(aggregateId: string, events: IEvent[]) {
     const serialisedEvents = events.map(e => serialiseEvent(e));
-
+    console.log("PUBLISH", aggregateId, events);
     return this.writeToEventStream(aggregateId, serialisedEvents);
+  }
+
+  async load(aggregateId: string) {
+    return this.readEventStream(aggregateId);
   }
 
   private makeResponse(axiosResponse: AxiosResponse<any>) {
@@ -49,6 +55,7 @@ export class EventStore {
     streamId: string,
     events: IEventStoreEvent[]
   ): Promise<IResponse> {
+    console.log("STREAM ID", streamId);
     const options = {
       url: `http://${this.url}:${this.port}/streams/${streamId}`,
       method: "post",
@@ -68,7 +75,32 @@ export class EventStore {
       return this.makeResponse(response);
     } catch (err) {
       return {
-        statusCode: 5343,
+        statusCode: 500,
+        data: err
+      };
+    }
+  }
+
+  private async readEventStream(streamId: string): Promise<any> {
+    const options = {
+      url: `http://${this.url}:${this.port}/streams/${streamId}`,
+      method: "post",
+      headers: {
+        "Content-Type": "application/vnd.eventstore.events+json"
+      },
+      auth: {
+        username: "admin",
+        password: "changeit"
+      }
+    } as AxiosRequestConfig;
+
+    try {
+      const response = await axios.request(options);
+      console.log("response", response);
+      return response;
+    } catch (err) {
+      return {
+        statusCode: 500,
         data: err
       };
     }

@@ -1,13 +1,27 @@
 import { Aggregate } from "./Aggregate";
-import { IEventPublisher } from "./IEventPublisher";
+import { IEventStore } from "../event-store/IEventStore";
+// import { IEventPublisher } from "./IEventPublisher";
+// import { IEventLoader } from "./IEventLoader";
+// import { IEventPersister } from "./IEventPersister";
 
 export abstract class Repository {
-  constructor(private readonly publisher: IEventPublisher) {}
+  constructor(
+    private eventStore: IEventStore // private readonly persister?: IEventPersister // private readonly publisher: IEventPublisher, // private readonly loader: IEventLoader
+  ) {}
+
+  load(aggregateId: string) {
+    this.eventStore.load(aggregateId);
+  }
 
   save<T extends Aggregate>(aggregate: T) {
-    return this.publisher.publish(
+    console.log("SAVE", aggregate);
+    const response = this.eventStore.publish(
       aggregate.id,
       aggregate.getUncommittedEvents()
     );
+
+    aggregate.markEventsAsCommited();
+
+    return response;
   }
 }

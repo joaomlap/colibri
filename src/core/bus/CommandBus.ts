@@ -9,7 +9,7 @@ import {
 type CommandType = Type<ICommand>;
 
 export class CommandBus {
-  private handlers = new Map<Type<ICommand>, ICommandHandler<ICommand>>();
+  private handlers = new Map<CommandType, ICommandHandler<ICommand>>();
 
   registerHandler<T extends ICommand>(
     commandClass: CommandType,

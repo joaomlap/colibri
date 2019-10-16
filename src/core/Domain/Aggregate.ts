@@ -1,9 +1,13 @@
 import { IEvent } from "./IEvent";
+import { Type } from "core/utils/Type";
+
+type EventClass = Type<IEvent>;
 
 export abstract class Aggregate {
   id: string;
-
   events: IEvent[] = [];
+  mutators = new Map<EventClass, Function>();
+
   private _version: number;
 
   get version() {
@@ -29,6 +33,21 @@ export abstract class Aggregate {
     this.markEventsAsCommited();
   }
 
+  loadFromStream(events: IEvent[]) {
+    events.forEach(e => this.applyEvent(e, false));
+  }
+
+  apply(event: IEvent) {
+    const eventPrototype = Object.getPrototypeOf(event);
+    const eventClass = eventPrototype && eventPrototype.constructor;
+    const applyFn = this.mutators.get(eventClass);
+
+    if (applyFn && typeof applyFn === "function") {
+      console.log("running function");
+      applyFn(event);
+    }
+  }
+
   applyEvent(event: IEvent, isNew = true) {
     if (isNew) {
       this.events.push(event);
@@ -36,6 +55,4 @@ export abstract class Aggregate {
 
     this.apply(event);
   }
-
-  apply<T extends IEvent>(_event: T) {}
 }
