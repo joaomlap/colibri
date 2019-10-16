@@ -4,7 +4,7 @@ import { CommandBus } from "../core/bus/CommandBus";
 import { CreateTaskCommand, CreateTaskHandler } from "./commands/CreateTask";
 import { TaskRepository } from "./TaskRepository";
 import { EventStore } from "../core/event-store/EventStore";
-import { CancelTask } from "./commands/CancelTask";
+import { CancelTaskCommand, CancelTaskHandler } from "./commands/CancelTask";
 
 export class TaskController implements IController {
   public path = "/task";
@@ -22,7 +22,6 @@ export class TaskController implements IController {
   }
 
   createTask = async (req: Request, res: Response) => {
-    console.log("CONTROLLER", req.body);
     const response = await this.commandBus.send(
       new CreateTaskCommand(req.body.task)
     );
@@ -33,22 +32,26 @@ export class TaskController implements IController {
 
   cancelTask = async (req: Request, res: Response) => {
     const response = await this.commandBus.send(
-      new CancelTask(req.params.taskId, req.body.taskStatus)
+      new CancelTaskCommand(req.params.taskId, req.body.taskStatus)
     );
 
-    res.status(response.statusCode);
-    res.json(response.data);
+    res.json("waiting");
   };
 
   initialiseRoutes() {
     this.router.post(`${this.path}/create`, this.createTask);
-    this.router.post(`${this.path}/updateStatus/:taskId`, this.cancelTask);
+    this.router.post(`${this.path}/cancel/:taskId`, this.cancelTask);
   }
 
   registerHandlers() {
     this.commandBus.registerHandler(
       CreateTaskCommand,
       new CreateTaskHandler(this.repository)
+    );
+
+    this.commandBus.registerHandler(
+      CancelTaskCommand,
+      new CancelTaskHandler(this.repository)
     );
   }
 }

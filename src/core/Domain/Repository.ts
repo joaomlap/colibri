@@ -9,12 +9,12 @@ export abstract class Repository {
     private eventStore: IEventStore // private readonly persister?: IEventPersister // private readonly publisher: IEventPublisher, // private readonly loader: IEventLoader
   ) {}
 
-  load(aggregateId: string) {
-    this.eventStore.load(aggregateId);
+  async load(aggregateId: string) {
+    const hey = await this.eventStore.load(aggregateId);
+    console.log("HEY", hey);
   }
 
   save<T extends Aggregate>(aggregate: T) {
-    console.log("SAVE", aggregate);
     const response = this.eventStore.publish(
       aggregate.id,
       aggregate.getUncommittedEvents()

@@ -6,7 +6,6 @@ export class TaskRepository extends Repository {
   createTask(taskData: Task) {
     const task = new TaskAggregate();
     task.createTask(taskData);
-    console.log("CREATE", taskData);
 
     return this.save(task);
   }

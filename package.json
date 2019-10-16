@@ -16,14 +16,17 @@
     "@types/node": "^12.7.8",
     "prettier": "^1.18.2",
     "ts-node": "^8.4.1",
-    "typescript": "^3.6.3"
+    "typescript": "^3.6.3",
+    "@types/feedparser": "^2.2.3",
+    "@types/node-feedparser": "^2.2.1",
+    "@types/request": "^2.48.3",
+    "@types/uuid": "^3.4.5"
   },
   "dependencies": {
-    "@types/feedparser": "^2.2.3",
-    "@types/uuid": "^3.4.5",
     "axios": "^0.19.0",
     "express": "^4.17.1",
     "feedparser": "^2.2.9",
+    "request": "^2.88.0",
     "rxjs": "^6.5.3",
     "ts-node-dev": "^1.0.0-pre.43",
     "uuid": "^3.3.3"

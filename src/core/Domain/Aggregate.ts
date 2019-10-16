@@ -43,7 +43,6 @@ export abstract class Aggregate {
     const applyFn = this.mutators.get(eventClass);
 
     if (applyFn && typeof applyFn === "function") {
-      console.log("running function");
       applyFn(event);
     }
   }

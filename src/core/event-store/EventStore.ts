@@ -1,8 +1,9 @@
 import { IResponse } from "../application/IResponse";
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
+import request from "request";
 import { IEvent } from "core/domain/IEvent";
 import { serialiseEvent } from "./helpers/serialiseEvent";
-import feedParser from "feedparser";
+import FeedParser from "feedparser";
 import { IEventStore } from "./IEventStore";
 
 type EventStoreCredentials = {
@@ -28,7 +29,6 @@ export class EventStore implements IEventStore {
 
   async publish(aggregateId: string, events: IEvent[]) {
     const serialisedEvents = events.map(e => serialiseEvent(e));
-    console.log("PUBLISH", aggregateId, events);
     return this.writeToEventStream(aggregateId, serialisedEvents);
   }
 
@@ -55,7 +55,6 @@ export class EventStore implements IEventStore {
     streamId: string,
     events: IEventStoreEvent[]
   ): Promise<IResponse> {
-    console.log("STREAM ID", streamId);
     const options = {
       url: `http://${this.url}:${this.port}/streams/${streamId}`,
       method: "post",
@@ -84,20 +83,41 @@ export class EventStore implements IEventStore {
   private async readEventStream(streamId: string): Promise<any> {
     const options = {
       url: `http://${this.url}:${this.port}/streams/${streamId}`,
-      method: "post",
+      method: "get",
       headers: {
-        "Content-Type": "application/vnd.eventstore.events+json"
+        Accept: "application/atom+xml"
       },
       auth: {
         username: "admin",
         password: "changeit"
-      }
+      },
+      responseType: "stream"
     } as AxiosRequestConfig;
 
     try {
       const response = await axios.request(options);
-      console.log("response", response);
-      return response;
+      const parser = new FeedParser({});
+      await response.data.pipe(parser);
+
+      return new Promise((resolve, reject) => {
+        const events: any = [];
+
+        parser.on("readable", function(this: any) {
+          let event;
+          const stream: any = this;
+
+          while ((event = stream.read())) {
+            events.push(event);
+            console.log("EVENT", event);
+          }
+        });
+        parser.on("end", function() {
+          resolve(events);
+        });
+        parser.on("error", function(err: any) {
+          reject(err);
+        });
+      });
     } catch (err) {
       return {
         statusCode: 500,
