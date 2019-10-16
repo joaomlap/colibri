@@ -11,8 +11,8 @@ export class EventBus {
     private subscriber: IEventSubscriber
   ) {}
 
-  publish<T extends IEvent>(aggregateId: string, event: T) {
-    return this.publisher.publish(aggregateId, event);
+  publish<T extends IEvent>(aggregateId: string, events: T[]) {
+    return this.publisher.publish(aggregateId, events);
   }
 
   bind<T extends IEvent>(event: T, handler: IEventHandler<T>) {

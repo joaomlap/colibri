@@ -1,14 +1,9 @@
 import Express, { Request, Response } from "express";
-import uuid from "uuid";
 import { IController } from "core/application/IController";
 import { CommandBus } from "../core/bus/CommandBus";
 import { CreateTaskCommand, CreateTaskHandler } from "./commands/CreateTask";
 import { TaskRepository } from "./TaskRepository";
-import EventStore, {
-  Ok,
-  TemporarilyRedirected,
-  InvalidRequest
-} from "../core/eventStore/EventStore";
+import { EventStore } from "../core/publisher/EventStore";
 
 export class TaskController implements IController {
   public path = "/task";
@@ -27,33 +22,12 @@ export class TaskController implements IController {
   }
 
   createTask = async (req: Request, res: Response) => {
-    const id = uuid.v4();
-
     const response = await this.commandBus.send(
-      new CreateTaskCommand({
-        id,
-        type: "move"
-      })
+      new CreateTaskCommand(req.body.taskDto)
     );
 
-    console.log("x", { response });
-
-    switch (response.constructor) {
-      case Ok:
-        res.send("ok");
-        break;
-      case TemporarilyRedirected:
-        res.status(response.statusCode);
-        res.send(response.message);
-        break;
-      case InvalidRequest:
-        res.status(response.statusCode);
-        res.send(response.message);
-        break;
-      default:
-        res.status(res.statusCode);
-        res.send(`An unpredicted error ocurred: ${response.message}`);
-    }
+    res.status(response.statusCode);
+    res.json(response.data);
   };
 
   initialiseRoutes() {

@@ -1,9 +1,5 @@
-import {
-  IEventStore,
-  IEventStoreResponse,
-  IEventStoreEvent
-} from "./IEventStore";
-import axios, { AxiosRequestConfig } from "axios";
+import { IResponse } from "../application/IResponse";
+import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import { IEvent } from "core/domain/IEvent";
 import { serialiseEvent } from "./helpers/serialiseEvent";
 
@@ -12,7 +8,13 @@ type EventStoreCredentials = {
   password: string;
 };
 
-export default class EventStore implements IEventStore {
+export interface IEventStoreEvent {
+  eventId: string;
+  eventType: string;
+  data: object;
+}
+
+export class EventStore {
   url: string;
   credentials: EventStoreCredentials;
   port: number = 2113;
@@ -28,10 +30,25 @@ export default class EventStore implements IEventStore {
     return this.writeToEventStream(aggregateId, serialisedEvents);
   }
 
+  private makeResponse(axiosResponse: AxiosResponse<any>) {
+    switch (axiosResponse.status) {
+      case Ok.statusCode:
+        return new Ok();
+      case TemporarilyRedirected.statusCode:
+        return new TemporarilyRedirected();
+      case InvalidRequest.statusCode:
+        return new InvalidRequest();
+      default:
+        throw new Error(
+          `Unexpected status code ${axiosResponse.status} returned.`
+        );
+    }
+  }
+
   private async writeToEventStream(
     streamId: string,
     events: IEventStoreEvent[]
-  ): Promise<IEventStoreResponse> {
+  ): Promise<IResponse> {
     const options = {
       url: `http://${this.url}:${this.port}/streams/${streamId}`,
       method: "post",
@@ -44,46 +61,32 @@ export default class EventStore implements IEventStore {
       },
       data: events
     } as AxiosRequestConfig;
-    console.log("JOAO", events, options);
 
     try {
-      console.log("JOOOO");
       const response = await axios.request(options);
-      console.log("JOOA", { response });
 
-      switch (response.status) {
-        case Ok.statusCode:
-          return new Ok();
-        case TemporarilyRedirected.statusCode:
-          return new TemporarilyRedirected();
-        case InvalidRequest.statusCode:
-          return new InvalidRequest();
-        default:
-          throw new Error(
-            `Unexpected status code ${response.status} returned.`
-          );
-      }
+      return this.makeResponse(response);
     } catch (err) {
       return {
         statusCode: 5343,
-        message: err
+        data: err
       };
     }
   }
 }
 
-export class Ok implements IEventStoreResponse {
+export class Ok implements IResponse {
   static statusCode = 201;
   statusCode = 201;
-  message = "New stream created.";
+  data = "New stream created.";
 }
-export class TemporarilyRedirected implements IEventStoreResponse {
+export class TemporarilyRedirected implements IResponse {
   static statusCode = 307;
   statusCode = 307;
-  message = "Temporarily Redirect.";
+  data = "Temporarily Redirect.";
 }
-export class InvalidRequest implements IEventStoreResponse {
+export class InvalidRequest implements IResponse {
   static statusCode = 400;
   statusCode = 400;
-  message = "Write request body invalid.";
+  data = "Write request body invalid.";
 }

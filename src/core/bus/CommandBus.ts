@@ -22,8 +22,6 @@ export class CommandBus {
     }
 
     this.handlers.set(commandClass, handler);
-
-    console.log(this.handlers);
   }
 
   send<T extends ICommand>(command: T): Promise<any> {
