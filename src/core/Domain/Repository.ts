@@ -9,9 +9,10 @@ export abstract class Repository {
     private eventStore: IEventStore // private readonly persister?: IEventPersister // private readonly publisher: IEventPublisher, // private readonly loader: IEventLoader
   ) {}
 
-  async load(aggregateId: string) {
+  async load(aggregateId: string): Promise<Aggregate> {
     const hey = await this.eventStore.load(aggregateId);
     console.log("HEY", hey);
+    return new Promise(resolve => resolve());
   }
 
   save<T extends Aggregate>(aggregate: T) {

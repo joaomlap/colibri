@@ -1,17 +1,18 @@
 import { ICommand } from "core/Domain/ICommand";
 import { ICommandHandler } from "core/domain/ICommandHandler";
-import { TaskStatus } from "task/TaskTypes";
 import { TaskRepository } from "task/TaskRepository";
 
 export class CancelTaskCommand implements ICommand {
-  constructor(public taskId: string, public taskStatus: TaskStatus) {}
+  constructor(public taskId: string) {}
 }
 
 export class CancelTaskHandler implements ICommandHandler<CancelTaskCommand> {
   constructor(private readonly repository: TaskRepository) {}
 
-  execute(command: CancelTaskCommand) {
-    this.repository.cancelTask(command.taskId, command.taskStatus);
+  async execute(command: CancelTaskCommand) {
+    const task = await this.repository.load(command.taskId);
+    // task.cancelTask();
+
     return new Promise(resolve => {
       resolve();
     });

@@ -102,13 +102,26 @@ export class EventStore implements IEventStore {
       return new Promise((resolve, reject) => {
         const events: any = [];
 
-        parser.on("readable", function(this: any) {
+        parser.on("readable", async function(this: any) {
           let event;
           const stream: any = this;
 
           while ((event = stream.read())) {
+            const options = {
+              url: event.link,
+              method: "get",
+              headers: {
+                Accept: "application/json"
+              },
+              auth: {
+                username: "admin",
+                password: "changeit"
+              }
+            } as AxiosRequestConfig;
+            const evt = await axios.request(options);
             events.push(event);
-            console.log("EVENT", event);
+            console.log("EVENT TITLE", event);
+            console.log("EVENT DATA", evt.data);
           }
         });
         parser.on("end", function() {
