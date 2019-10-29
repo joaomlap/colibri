@@ -1,12 +1,9 @@
 import { IEvent } from "./IEvent";
-import { Type } from "core/utils/Type";
-
-type EventClass = Type<IEvent>;
 
 export abstract class Aggregate {
   id: string;
   events: IEvent[] = [];
-  mutators = new Map<EventClass, Function>();
+  mutators = new Map<string, Function>();
 
   private _version: number;
 
@@ -38,9 +35,8 @@ export abstract class Aggregate {
   }
 
   apply(event: IEvent) {
-    const eventPrototype = Object.getPrototypeOf(event);
-    const eventClass = eventPrototype && eventPrototype.constructor;
-    const applyFn = this.mutators.get(eventClass);
+    const eventClassName = event && event.constructor && event.constructor.name;
+    const applyFn = this.mutators.get(eventClassName);
 
     if (applyFn && typeof applyFn === "function") {
       applyFn(event);

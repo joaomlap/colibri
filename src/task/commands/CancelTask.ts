@@ -11,10 +11,8 @@ export class CancelTaskHandler implements ICommandHandler<CancelTaskCommand> {
 
   async execute(command: CancelTaskCommand) {
     const task = await this.repository.load(command.taskId);
-    // task.cancelTask();
+    task.cancelTask();
 
-    return new Promise(resolve => {
-      resolve();
-    });
+    return this.repository.save(task);
   }
 }

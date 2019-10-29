@@ -1,28 +1,32 @@
 import { Aggregate } from "./Aggregate";
 import { IEventStore } from "../event-store/IEventStore";
+import { Response, Ok, Err } from "../application/Response";
 // import { IEventPublisher } from "./IEventPublisher";
 // import { IEventLoader } from "./IEventLoader";
 // import { IEventPersister } from "./IEventPersister";
 
 export abstract class Repository {
   constructor(
-    private eventStore: IEventStore // private readonly persister?: IEventPersister // private readonly publisher: IEventPublisher, // private readonly loader: IEventLoader
+    protected eventStore: IEventStore // private readonly persister?: IEventPersister // private readonly publisher: IEventPublisher, // private readonly loader: IEventLoader
   ) {}
 
-  async load(aggregateId: string): Promise<Aggregate> {
-    const hey = await this.eventStore.load(aggregateId);
-    console.log("HEY", hey);
-    return new Promise(resolve => resolve());
-  }
+  abstract async load(aggregateId: string): Promise<Response<Aggregate>>;
 
-  save<T extends Aggregate>(aggregate: T) {
-    const response = this.eventStore.publish(
+  async save<T extends Aggregate>(aggregate: T): Promise<Response<Aggregate>> {
+    const response = await this.eventStore.publish(
       aggregate.id,
       aggregate.getUncommittedEvents()
     );
+    let result: Response<Aggregate>;
+
+    if (response.isOk()) {
+      result = new Ok(response.status, aggregate);
+    } else {
+      result = new Err(response.status, response.get());
+    }
 
     aggregate.markEventsAsCommited();
 
-    return response;
+    return result;
   }
 }

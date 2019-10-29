@@ -26,16 +26,17 @@ export class TaskController implements IController {
       new CreateTaskCommand(req.body.task)
     );
 
-    res.status(response.statusCode);
-    res.json(response.data);
+    res.status(response.status);
+    res.json(response.get());
   };
 
   cancelTask = async (req: Request, res: Response) => {
     const response = await this.commandBus.send(
-      new CancelTaskCommand(req.params.taskId, req.body.taskStatus)
+      new CancelTaskCommand(req.params.taskId)
     );
 
-    res.json("waiting");
+    res.status(response.status);
+    res.json(response.get());
   };
 
   initialiseRoutes() {
