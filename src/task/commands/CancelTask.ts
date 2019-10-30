@@ -1,6 +1,9 @@
 import { ICommand } from "core/Domain/ICommand";
 import { ICommandHandler } from "core/domain/ICommandHandler";
 import { TaskRepository } from "task/TaskRepository";
+import { TaskAggregate } from "task/TaskAggregate";
+import { Response, Err } from "../../core/application/Response";
+import { Aggregate } from "core/domain/Aggregate";
 
 export class CancelTaskCommand implements ICommand {
   constructor(public taskId: string) {}
@@ -10,9 +13,18 @@ export class CancelTaskHandler implements ICommandHandler<CancelTaskCommand> {
   constructor(private readonly repository: TaskRepository) {}
 
   async execute(command: CancelTaskCommand) {
-    const task = await this.repository.load(command.taskId);
-    task.cancelTask();
+    const response = await this.repository.load(command.taskId);
+    let result: Response<Aggregate>;
 
-    return this.repository.save(task);
+    if (response.isOk()) {
+      const task = response.get() as TaskAggregate;
+      task.cancelTask();
+
+      result = await this.repository.save(task);
+    } else {
+      result = new Err(response.status, response.get() as string);
+    }
+
+    return result;
   }
 }

@@ -25,7 +25,7 @@ export class CommandBus {
     this.handlers.set(commandClass, handler);
   }
 
-  send<T extends ICommand>(command: T): Promise<Response<any>> {
+  async send<T extends ICommand>(command: T): Promise<Response<any>> {
     const commandPrototype = Object.getPrototypeOf(command);
     const commandClass = commandPrototype && commandPrototype.constructor;
     const handler = this.handlers.get(commandClass);

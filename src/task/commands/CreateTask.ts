@@ -3,6 +3,7 @@ import { ICommandHandler } from "core/domain/ICommandHandler";
 import { TaskStatus, TaskType, TaskUrgency, Task } from "task/TaskTypes";
 import { TaskRepository } from "../TaskRepository";
 import { TaskAggregate } from "../TaskAggregate";
+import uuid = require("uuid");
 
 export class CreateTaskCommand implements ICommand {
   public id: string;
@@ -11,7 +12,7 @@ export class CreateTaskCommand implements ICommand {
   public urgency: TaskUrgency;
 
   constructor(task: Task) {
-    this.id = task.id;
+    this.id = uuid.v4();
     this.type = task.type;
     this.status = task.status;
     this.urgency = task.urgency;
@@ -21,7 +22,7 @@ export class CreateTaskCommand implements ICommand {
 export class CreateTaskHandler implements ICommandHandler<CreateTaskCommand> {
   constructor(private readonly repository: TaskRepository) {}
 
-  execute(command: CreateTaskCommand) {
+  async execute(command: CreateTaskCommand) {
     const task = new TaskAggregate();
     task.createTask(command);
 

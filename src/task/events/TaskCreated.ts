@@ -1,6 +1,11 @@
 import { IEvent } from "core/domain/IEvent";
-import { Task } from "../TaskTypes";
+import { TaskType, TaskStatus, TaskUrgency } from "../TaskTypes";
 
 export class TaskCreated implements IEvent {
-  constructor(public task: Task) {}
+  constructor(
+    public id: string,
+    public type: TaskType,
+    public status: TaskStatus,
+    public urgency: TaskUrgency
+  ) {}
 }

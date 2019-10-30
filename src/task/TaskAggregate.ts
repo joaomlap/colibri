@@ -1,9 +1,11 @@
 import { Aggregate } from "../core/domain/Aggregate";
 import { Task, TaskType, TaskStatus, TaskUrgency } from "./TaskTypes";
-import { TaskCreated } from "./events/TaskCreated";
 import { IEvent } from "core/domain/IEvent";
-import uuid = require("uuid");
+import { TaskCreated } from "./events/TaskCreated";
 import { TaskCancelled } from "./events/TaskCancelled";
+import { Type } from "core/utils/Type";
+
+type EventClass = Type<IEvent>;
 
 export class TaskAggregate extends Aggregate {
   id: string;
@@ -15,15 +17,20 @@ export class TaskAggregate extends Aggregate {
     super();
 
     // apply functions
-    this.mutators.set(TaskCreated.constructor.name, this.applyTaskCreated);
-    this.mutators.set(TaskCancelled.constructor.name, this.applyTaskCancelled);
+    this.mutators.set(this.getClassName(TaskCreated), this.applyTaskCreated);
+    this.mutators.set(
+      this.getClassName(TaskCancelled),
+      this.applyTaskCancelled
+    );
 
     // construct from event stream
     eventStream.forEach(event => this.apply(event));
   }
 
   createTask(task: Task) {
-    this.applyEvent(new TaskCreated(task));
+    this.applyEvent(
+      new TaskCreated(task.id, task.type, task.status, task.urgency)
+    );
   }
 
   cancelTask() {
@@ -31,7 +38,7 @@ export class TaskAggregate extends Aggregate {
   }
 
   applyTaskCreated = (task: Task) => {
-    this.id = uuid.v4();
+    this.id = task.id;
     this.type = task.type;
     this.status = task.status;
     this.urgency = task.urgency;
@@ -40,4 +47,8 @@ export class TaskAggregate extends Aggregate {
   applyTaskCancelled = () => {
     this.status = TaskStatus.Cancelled;
   };
+
+  getClassName(classFn: EventClass) {
+    return classFn.prototype.constructor.name;
+  }
 }

@@ -8,7 +8,7 @@ export interface IEventStoreEvent {
 }
 
 export interface IEventStore {
-  load(id: string): Promise<Response<IEvent[]>>;
+  load(id: string): Promise<Response<IEventStoreEvent[]>>;
   publish(aggregateId: string, events: IEvent[]): Promise<Response<string>>;
 }
 

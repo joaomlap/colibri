@@ -10,6 +10,27 @@ type EventStoreCredentials = {
   password: string;
 };
 
+function getEventFromLink(
+  options: AxiosRequestConfig
+): Promise<IEventStoreEvent> {
+  return new Promise(async resolve => {
+    const eventLinkResponse = await axios.request(options);
+    if (eventLinkResponse && eventLinkResponse.status === 200) {
+      const data = eventLinkResponse.data;
+
+      if (data && data.content) {
+        const event = {
+          eventId: data.content.eventId,
+          eventType: data.content.eventType,
+          data: data.content.data
+        };
+
+        resolve(event);
+      }
+    }
+  });
+}
+
 export class EventStore implements IEventStore {
   url: string;
   credentials: EventStoreCredentials;
@@ -44,7 +65,7 @@ export class EventStore implements IEventStore {
       },
       auth: {
         username: "admin",
-        password: "changei"
+        password: "changeit"
       },
       data: events
     } as AxiosRequestConfig;
@@ -68,18 +89,18 @@ export class EventStore implements IEventStore {
     return result;
   }
 
-  private async readEventStream(
+  private readEventStream = async (
     streamId: string
-  ): Promise<Response<IEventStoreEvent[]>> {
+  ): Promise<Response<IEventStoreEvent[]>> => {
     const options = {
-      url: `http://${this.url}:${this.port}/streams/${streamId}`,
+      url: `http://${this.url}:${this.port}/streams/task-${streamId}`,
       method: "get",
       headers: {
         Accept: "application/atom+xml"
       },
       auth: {
         username: "admin",
-        password: "changei"
+        password: "changeit"
       },
       responseType: "stream"
     } as AxiosRequestConfig;
@@ -89,8 +110,8 @@ export class EventStore implements IEventStore {
       const parser = new FeedParser({});
       await response.data.pipe(parser);
 
-      return new Promise((resolve, reject) => {
-        const events: any = [];
+      return new Promise(resolve => {
+        const promises: Promise<IEventStoreEvent>[] = [];
 
         parser.on("readable", async function(this: any) {
           let event;
@@ -108,32 +129,28 @@ export class EventStore implements IEventStore {
                 password: "changeit"
               }
             } as AxiosRequestConfig;
-            const eventLinkResponse = await axios.request(options);
-            if (eventLinkResponse && eventLinkResponse.status === 200) {
-              const data = eventLinkResponse.data;
-
-              if (data && data.content) {
-                const event = {
-                  eventId: data.content.eventId,
-                  eventType: data.content.eventType,
-                  data: data.content.data
-                };
-
-                events.push(event);
+            try {
+              promises.push(getEventFromLink(options));
+            } catch (err) {
+              if (err.isAxiosError) {
+                const { response } = err;
+                resolve(new Err(response.status, response.statusText));
+              } else {
+                resolve(new Err(500, `An unexpected error occurred. ${err}`));
               }
-            } else {
-              console.error("Could not get event.");
             }
           }
         });
-        parser.on("end", function() {
+        parser.on("end", async function() {
+          const events = await Promise.all(promises);
           resolve(new Ok(200, events));
         });
         parser.on("error", function(err: any) {
           if (err.isAxiosError) {
-            reject(new Err(err.status, err.statusText));
+            const { response } = err;
+            resolve(new Err(response.status, response.statusText));
           } else {
-            reject(
+            resolve(
               new Err(500, `An unexpected error occurred: ${err.message}`)
             );
           }
@@ -141,10 +158,11 @@ export class EventStore implements IEventStore {
       });
     } catch (err) {
       if (err.isAxiosError) {
-        return new Err(err.status, err.statusText);
+        const { response } = err;
+        return new Err(response.status, response.statusText);
       } else {
         return new Err(500, `An unexpected error occurred: ${err.message}`);
       }
     }
-  }
+  };
 }

@@ -1,9 +1,10 @@
 import { IEvent } from "./IEvent";
+import { IEventStoreEvent } from "core/event-store/IEventStore";
 
 export abstract class Aggregate {
   id: string;
-  events: IEvent[] = [];
-  mutators = new Map<string, Function>();
+  protected events: IEvent[] = [];
+  protected mutators = new Map<string, Function>();
 
   private _version: number;
 
@@ -49,5 +50,18 @@ export abstract class Aggregate {
     }
 
     this.apply(event);
+  }
+
+  // Serialised Events
+  loadFromEventStream(serialisedEvts: IEventStoreEvent[]) {
+    serialisedEvts.forEach(e => this.applySerialisedEvent(e));
+  }
+
+  applySerialisedEvent(serialisedEvt: IEventStoreEvent) {
+    const applyFn = this.mutators.get(serialisedEvt.eventType);
+
+    if (applyFn && typeof applyFn === "function") {
+      applyFn(serialisedEvt.data);
+    }
   }
 }

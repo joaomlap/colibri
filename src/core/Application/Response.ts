@@ -31,6 +31,7 @@ export class Err extends ResponseOptions {
   }
 
   isOk = () => false;
+
   get() {
     return this.message;
   }
