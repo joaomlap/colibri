@@ -63,10 +63,7 @@ export class EventStore implements IEventStore {
       headers: {
         "Content-Type": "application/vnd.eventstore.events+json"
       },
-      auth: {
-        username: "admin",
-        password: "changeit"
-      },
+      auth: this.credentials,
       data: events
     } as AxiosRequestConfig;
     let result: Response<string> = new Err(500, "An unexpected error occurred");
@@ -98,10 +95,7 @@ export class EventStore implements IEventStore {
       headers: {
         Accept: "application/atom+xml"
       },
-      auth: {
-        username: "admin",
-        password: "changeit"
-      },
+      auth: this.credentials,
       responseType: "stream"
     } as AxiosRequestConfig;
 
@@ -124,10 +118,7 @@ export class EventStore implements IEventStore {
               headers: {
                 Accept: "application/vnd.eventstore.atom+json"
               },
-              auth: {
-                username: "admin",
-                password: "changeit"
-              }
+              auth: this.credentials
             } as AxiosRequestConfig;
             try {
               promises.push(getEventFromLink(options));
