@@ -1,14 +1,9 @@
 import { Aggregate } from "./Aggregate";
 import { IEventStore } from "../event-store/IEventStore";
 import { Response, Ok, Err } from "../application/Response";
-// import { IEventPublisher } from "./IEventPublisher";
-// import { IEventLoader } from "./IEventLoader";
-// import { IEventPersister } from "./IEventPersister";
 
 export abstract class Repository {
-  constructor(
-    protected eventStore: IEventStore // private readonly persister?: IEventPersister // private readonly publisher: IEventPublisher, // private readonly loader: IEventLoader
-  ) {}
+  constructor(protected eventStore: IEventStore) {}
 
   abstract async load(aggregateId: string): Promise<Response<Aggregate>>;
 

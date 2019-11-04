@@ -7,7 +7,6 @@ export class TaskRepository extends Repository {
   async load(aggregateId: string): Promise<Response<TaskAggregate>> {
     let result: Response<TaskAggregate>;
     const response = await this.eventStore.load(aggregateId);
-    console.log("repo", response.get());
 
     if (response.isOk()) {
       const events = response.get() as IEventStoreEvent[];

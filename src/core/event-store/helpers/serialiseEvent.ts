@@ -1,5 +1,5 @@
 import { IEvent } from "core/domain/IEvent";
-import { IEventStoreEvent } from "core/event-store/EventStore";
+import { IEventStoreEvent } from "../IEventStore";
 import uuid = require("uuid");
 
 export function serialiseEvent(event: IEvent): IEventStoreEvent {

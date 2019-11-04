@@ -1,5 +1,5 @@
 import { Response, Ok, Err } from "../application/Response";
-import axios, { AxiosRequestConfig } from "axios";
+import axios, { AxiosRequestConfig, AxiosError } from "axios";
 import { IEvent } from "core/domain/IEvent";
 import { serialiseEvent } from "./helpers/serialiseEvent";
 import FeedParser from "feedparser";
@@ -9,27 +9,6 @@ type EventStoreCredentials = {
   username: string;
   password: string;
 };
-
-function getEventFromLink(
-  options: AxiosRequestConfig
-): Promise<IEventStoreEvent> {
-  return new Promise(async resolve => {
-    const eventLinkResponse = await axios.request(options);
-    if (eventLinkResponse && eventLinkResponse.status === 200) {
-      const data = eventLinkResponse.data;
-
-      if (data && data.content) {
-        const event = {
-          eventId: data.content.eventId,
-          eventType: data.content.eventType,
-          data: data.content.data
-        };
-
-        resolve(event);
-      }
-    }
-  });
-}
 
 export class EventStore implements IEventStore {
   url: string;
@@ -51,6 +30,39 @@ export class EventStore implements IEventStore {
 
   async load(aggregateId: string) {
     return this.readEventStream(aggregateId);
+  }
+
+  private static handleError(err: AxiosError | Error) {
+    let result = new Err(500, `An unexpected error occurred: ${err}`);
+
+    if ("isAxiosError" in err && err.response) {
+      const { response } = err;
+
+      result = new Err(response.status, response.statusText);
+    }
+
+    return result;
+  }
+
+  private static getEventFromLink(
+    options: AxiosRequestConfig
+  ): Promise<IEventStoreEvent> {
+    return new Promise(async resolve => {
+      const eventLinkResponse = await axios.request(options);
+      if (eventLinkResponse && eventLinkResponse.status === 200) {
+        const data = eventLinkResponse.data;
+
+        if (data && data.content) {
+          const event = {
+            eventId: data.content.eventId,
+            eventType: data.content.eventType,
+            data: data.content.data
+          };
+
+          resolve(event);
+        }
+      }
+    });
   }
 
   private async writeToEventStream(
@@ -76,19 +88,15 @@ export class EventStore implements IEventStore {
         result = new Ok(307, "Redirected");
       }
     } catch (err) {
-      if (err.isAxiosError) {
-        const { response } = err;
-
-        result = new Err(response.status, response.statusText);
-      }
+      result = EventStore.handleError(err);
     }
 
     return result;
   }
 
-  private readEventStream = async (
+  private async readEventStream(
     streamId: string
-  ): Promise<Response<IEventStoreEvent[]>> => {
+  ): Promise<Response<IEventStoreEvent[]>> {
     const options = {
       url: `http://${this.url}:${this.port}/streams/task-${streamId}`,
       method: "get",
@@ -121,14 +129,9 @@ export class EventStore implements IEventStore {
               auth: this.credentials
             } as AxiosRequestConfig;
             try {
-              promises.push(getEventFromLink(options));
+              promises.push(EventStore.getEventFromLink(options));
             } catch (err) {
-              if (err.isAxiosError) {
-                const { response } = err;
-                resolve(new Err(response.status, response.statusText));
-              } else {
-                resolve(new Err(500, `An unexpected error occurred. ${err}`));
-              }
+              resolve(EventStore.handleError(err));
             }
           }
         });
@@ -137,23 +140,11 @@ export class EventStore implements IEventStore {
           resolve(new Ok(200, events));
         });
         parser.on("error", function(err: any) {
-          if (err.isAxiosError) {
-            const { response } = err;
-            resolve(new Err(response.status, response.statusText));
-          } else {
-            resolve(
-              new Err(500, `An unexpected error occurred: ${err.message}`)
-            );
-          }
+          resolve(EventStore.handleError(err));
         });
       });
     } catch (err) {
-      if (err.isAxiosError) {
-        const { response } = err;
-        return new Err(response.status, response.statusText);
-      } else {
-        return new Err(500, `An unexpected error occurred: ${err.message}`);
-      }
+      return EventStore.handleError(err);
     }
-  };
+  }
 }
