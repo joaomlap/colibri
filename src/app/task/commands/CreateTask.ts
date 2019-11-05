@@ -1,6 +1,6 @@
 import { ICommand } from "core/Domain/ICommand";
 import { ICommandHandler } from "core/domain/ICommandHandler";
-import { TaskStatus, TaskType, TaskUrgency, Task } from "task/TaskTypes";
+import { TaskStatus, TaskType, TaskUrgency, Task } from "../TaskTypes";
 import { TaskRepository } from "../TaskRepository";
 import { TaskAggregate } from "../TaskAggregate";
 import uuid = require("uuid");

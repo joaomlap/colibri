@@ -1,9 +1,9 @@
-import { ICommand } from "core/Domain/ICommand";
-import { ICommandHandler } from "core/domain/ICommandHandler";
-import { TaskRepository } from "task/TaskRepository";
-import { TaskAggregate } from "task/TaskAggregate";
-import { Response, Err } from "../../core/application/Response";
-import { Aggregate } from "core/domain/Aggregate";
+import { ICommand } from "../../../core/Domain/ICommand";
+import { ICommandHandler } from "../../../core/domain/ICommandHandler";
+import { TaskRepository } from "../TaskRepository";
+import { TaskAggregate } from "../TaskAggregate";
+import { Response, Err } from "../../../core/application/Response";
+import { Aggregate } from "../../../core/domain/Aggregate";
 
 export class CancelTaskCommand implements ICommand {
   constructor(public taskId: string) {}

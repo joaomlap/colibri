@@ -1,9 +1,9 @@
 import Express, { Request, Response } from "express";
-import { IController } from "core/application/IController";
-import { CommandBus } from "../core/bus/CommandBus";
+import { IController } from "../../core/application/IController";
+import { CommandBus } from "../../core/bus/CommandBus";
 import { CreateTaskCommand, CreateTaskHandler } from "./commands/CreateTask";
 import { TaskRepository } from "./TaskRepository";
-import { EventStore } from "../core/event-store/EventStore";
+import { EventStore } from "../EventStore";
 import { CancelTaskCommand, CancelTaskHandler } from "./commands/CancelTask";
 
 export class TaskController implements IController {
