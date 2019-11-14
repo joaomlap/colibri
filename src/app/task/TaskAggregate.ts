@@ -1,6 +1,6 @@
-import { Aggregate } from "../../core/domain/Aggregate";
+import { Aggregate } from "core/domain/Aggregate";
 import { Task, TaskType, TaskStatus, TaskUrgency } from "./TaskTypes";
-import { IEvent } from "../../core/domain/IEvent";
+import { IEvent } from "core/domain/IEvent";
 import { TaskCreated } from "./events/TaskCreated";
 import { TaskCancelled } from "./events/TaskCancelled";
 import { Type } from "core/utils/Type";

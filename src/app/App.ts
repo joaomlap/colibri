@@ -1,5 +1,5 @@
 import Express from "express";
-import { IController } from "core/application/IController";
+import { Module } from "core/application/Module";
 
 export default class App {
   public app: Express.Application;
@@ -8,23 +8,21 @@ export default class App {
   constructor(
     port: number,
     middlewares: Express.RequestHandler[],
-    controllers?: IController[]
+    modules?: Module[]
   ) {
     this.app = Express();
     this.port = port;
 
     this.initialiseMiddlewares(middlewares);
-    this.initialiseControllers(controllers);
+    this.initialiseModules(modules);
   }
 
   private initialiseMiddlewares(middlewares: Express.RequestHandler[] = []) {
     this.app.use(...middlewares);
   }
 
-  private initialiseControllers(controllers: IController[] = []) {
-    controllers.forEach(controller => {
-      this.app.use("/", controller.router);
-    });
+  private initialiseModules(modules: Module[] = []) {
+    modules.forEach(module => module.registerCommandHandlers());
   }
 
   public listen() {

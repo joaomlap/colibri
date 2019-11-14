@@ -14,12 +14,8 @@ export class Ok<T> {
   }
 }
 
-export class Err<E> {
-  error: E;
-
-  constructor(error: E) {
-    this.error = error;
-  }
+export class Err {
+  constructor(public error: string) {}
 
   get() {
     return this.error;
@@ -30,4 +26,4 @@ export class Err<E> {
   }
 }
 
-export type Result<T, E> = Ok<T> | Err<E>;
+export type Result<T> = Ok<T> | Err;

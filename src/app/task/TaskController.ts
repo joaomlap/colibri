@@ -1,12 +1,12 @@
 import Express, { Request, Response } from "express";
-import { IController } from "../../core/application/IController";
-import { CommandBus } from "../../core/bus/CommandBus";
+import { Controller } from "core/application/Controller";
+import { CommandBus } from "core/bus/CommandBus";
 import { CreateTaskCommand, CreateTaskHandler } from "./commands/CreateTask";
 import { TaskRepository } from "./TaskRepository";
 import { EventStore } from "../EventStore";
 import { CancelTaskCommand, CancelTaskHandler } from "./commands/CancelTask";
 
-export class TaskController implements IController {
+export class TaskController extends Controller {
   public path = "/task";
   public router = Express.Router();
   private commandBus = new CommandBus();
@@ -15,11 +15,6 @@ export class TaskController implements IController {
     password: "changeit"
   });
   repository = new TaskRepository(this.eventStore);
-
-  constructor() {
-    this.initialiseRoutes();
-    this.registerHandlers();
-  }
 
   createTask = async (req: Request, res: Response) => {
     const response = await this.commandBus.send(
