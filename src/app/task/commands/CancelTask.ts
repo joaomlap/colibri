@@ -13,7 +13,7 @@ export class CancelTaskHandler implements ICommandHandler<CancelTaskCommand> {
   constructor(private readonly repository: TaskRepository) {}
 
   async execute(command: CancelTaskCommand) {
-    const response = await this.repository.load(command.taskId, TaskAggregate);
+    const response = await this.repository.load(command.taskId);
     let result: Response<Aggregate>;
 
     if (response.isOk()) {
