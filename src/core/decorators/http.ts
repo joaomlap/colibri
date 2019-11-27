@@ -30,10 +30,10 @@ function httpMethodDecorator(constant: string, path: string) {
   };
 }
 
-export function get(path: string) {
+export function Get(path: string) {
   return httpMethodDecorator(httpMethods.GET, path);
 }
 
-export function post(path: string) {
+export function Post(path: string) {
   return httpMethodDecorator(httpMethods.POST, path);
 }

@@ -44,6 +44,15 @@
     "testEnvironment": "node",
     "collectCoverageFrom": [
       "src/core/**/*.{ts,js}"
+    ],
+    "roots": [
+      "src"
+    ],
+    "modulePaths": [
+      "src"
+    ],
+    "moduleDirectories": [
+      "node_modules"
     ]
   }
 }

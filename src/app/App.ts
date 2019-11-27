@@ -1,5 +1,5 @@
 import Express from "express";
-import { Module } from "core/application/Module";
+import { Module } from "core/Module";
 
 export default class App {
   public app: Express.Application;

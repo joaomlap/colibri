@@ -1,4 +1,4 @@
-import { IEvent } from "core/domain/IEvent";
+import { IEvent } from "core/IEvent";
 import { TaskType, TaskStatus, TaskUrgency } from "../TaskTypes";
 
 export class TaskCreated implements IEvent {

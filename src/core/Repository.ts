@@ -1,6 +1,6 @@
 import { Aggregate } from "./Aggregate";
-import { IEventStore } from "../event-store/IEventStore";
-import { Response, Ok, Err } from "../application/Response";
+import { IEventStore } from "./event-store/IEventStore";
+import { Response, Ok, Err } from "./Response";
 
 export abstract class Repository {
   constructor(protected eventStore: IEventStore) {}

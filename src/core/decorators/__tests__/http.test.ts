@@ -1,5 +1,5 @@
 import Express from "express";
-import { get, post, httpMethods, httpDecoratorMetaData } from "../http";
+import { Get, Post, httpMethods, httpDecoratorMetaData } from "../http";
 import sinon from "sinon";
 import axios from "axios";
 
@@ -29,7 +29,7 @@ describe("HTTP decorators", () => {
         }
       }
 
-      @get(link)
+      @Get(link)
       getFn() {}
     }
 
@@ -60,13 +60,13 @@ describe("HTTP decorators", () => {
         }
       }
 
-      @get(link)
+      @Get(link)
       firstGetFn() {}
 
-      @get(secondLink)
+      @Get(secondLink)
       secondGetFn() {}
 
-      @post(link)
+      @Post(link)
       postFn() {}
     }
 

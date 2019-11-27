@@ -1,5 +1,5 @@
-import { IEvent } from "../domain/IEvent";
-import { Response } from "core/application/Response";
+import { IEvent } from "../IEvent";
+import { Response } from "core/Response";
 
 export interface IEventStoreEvent {
   eventId: string;

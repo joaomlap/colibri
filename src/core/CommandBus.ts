@@ -1,11 +1,11 @@
-import { ICommand } from "core/Domain/ICommand";
-import { ICommandHandler } from "core/domain/ICommandHandler";
+import { ICommand } from "core/ICommand";
+import { ICommandHandler } from "core/ICommandHandler";
 import { Type } from "core/utils/Type";
 import {
   TooManyCommandHandlersException,
   CommandHandlerNotFoundException
-} from "../exceptions";
-import { Response } from "core/application/Response";
+} from "./exceptions";
+import { Response } from "core/Response";
 
 type CommandType = Type<ICommand>;
 

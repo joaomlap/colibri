@@ -1,5 +1,5 @@
-import { ICommand } from "core/Domain/ICommand";
-import { ICommandHandler } from "core/domain/ICommandHandler";
+import { ICommand } from "core/ICommand";
+import { ICommandHandler } from "core/ICommandHandler";
 import { TaskStatus, TaskType, TaskUrgency, Task } from "../TaskTypes";
 import { TaskRepository } from "../TaskRepository";
 import { TaskAggregate } from "../TaskAggregate";

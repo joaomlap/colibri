@@ -1,6 +1,6 @@
-import { Response, Ok, Err } from "core/application/Response";
+import { Response, Ok, Err } from "core/Response";
 import axios, { AxiosRequestConfig, AxiosError } from "axios";
-import { IEvent } from "core/domain/IEvent";
+import { IEvent } from "core/IEvent";
 import { serialiseEvent } from "core/event-store/helpers/serialiseEvent";
 import FeedParser from "feedparser";
 import { IEventStore, IEventStoreEvent } from "core/event-store/IEventStore";

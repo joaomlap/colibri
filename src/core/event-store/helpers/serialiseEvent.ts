@@ -1,4 +1,4 @@
-import { IEvent } from "core/domain/IEvent";
+import { IEvent } from "core/IEvent";
 import { IEventStoreEvent } from "../IEventStore";
 import uuid = require("uuid");
 

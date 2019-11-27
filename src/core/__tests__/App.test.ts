@@ -17,7 +17,7 @@ function getMocks(
 
   return {
     expressApp,
-    app: new App(expressApp, 3000, middlewares, modules)
+    app: new App(expressApp, middlewares, modules)
   };
 }
 
@@ -25,7 +25,7 @@ describe("App", () => {
   it("should create an application", async () => {
     const { expressApp, app } = getMocks();
 
-    await app.listen();
+    await app.listen(3000);
 
     expect(expressApp.use).not.toHaveBeenCalled();
     expect(expressApp.listen).toHaveBeenCalled();
@@ -35,7 +35,7 @@ describe("App", () => {
     const fakeMiddleware = () => {};
     const { expressApp, app } = getMocks([fakeMiddleware]);
 
-    await app.listen();
+    await app.listen(3000);
 
     expect(expressApp.use).toHaveBeenCalledWith(fakeMiddleware);
     expect(expressApp.listen).toHaveBeenCalled();
@@ -50,10 +50,18 @@ describe("App", () => {
 
     const { expressApp, app } = getMocks([fakeMiddleware], [fakeModule]);
 
-    await app.listen();
+    await app.listen(3000);
 
     expect(expressApp.use).toHaveBeenCalledWith(fakeMiddleware);
     expect(expressApp.listen).toHaveBeenCalled();
     expect(fakeModule.onInit).toHaveBeenCalled();
+  });
+
+  it("should allow to pass callback at app start", async () => {
+    const { expressApp, app } = getMocks();
+    const fakeCb = jest.fn();
+    await app.listen(3000, fakeCb);
+
+    expect(expressApp.listen).toHaveBeenCalledWith(3000, fakeCb);
   });
 });

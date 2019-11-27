@@ -1,8 +1,8 @@
-import { Repository } from "core/domain/Repository";
-import { Response, Ok, Err } from "core/application/Response";
+import { Repository } from "core/Repository";
+import { Response, Ok, Err } from "core/Response";
 import { TaskAggregate } from "./TaskAggregate";
 import { IEventStoreEvent } from "core/event-store/IEventStore";
-import { Aggregate } from "core/domain/Aggregate";
+import { Aggregate } from "core/Aggregate";
 
 export class TaskRepository extends Repository {
   // async load(aggregateId: string): Promise<Response<Aggregate>> {
