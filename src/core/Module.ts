@@ -9,6 +9,7 @@ import { CommandBus } from "core/CommandBus";
 import { EventBus } from "core/EventBus";
 import { COMMAND_HANDLER } from "core/decorators/commands";
 import { ICommandHandler } from "core/ICommandHandler";
+import { CONTROLLER } from "./decorators/ControllerMetadata";
 // import { IModule } from "./IModule";
 
 type ControllerType = Type<Controller>;
@@ -31,7 +32,9 @@ export class Module {
   private initialiseControllers(app: Express.Application) {
     if (this.controllers && this.controllers.length) {
       this.controllers.forEach(ControllerClass => {
-        const controller = new ControllerClass();
+        const path = Reflect.getMetadata(CONTROLLER, ControllerClass);
+        const controller = new ControllerClass(path);
+
         app.use(controller.path, controller.router);
       });
     }
@@ -39,10 +42,10 @@ export class Module {
 
   private registerCommandHandlers(commandBus: CommandBus) {
     if (this.commandHandlers && this.commandHandlers.length) {
-      this.commandHandlers.forEach(handler => {
-        const metadata = Reflect.getMetadata(COMMAND_HANDLER, handler);
+      this.commandHandlers.forEach((Handler: CommandHandlerType) => {
+        const CommandClass = Reflect.getMetadata(COMMAND_HANDLER, Handler);
 
-        console.log("meta", metadata, commandBus);
+        commandBus.registerHandler(CommandClass, new Handler());
       });
     }
   }

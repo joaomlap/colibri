@@ -1,9 +1,8 @@
-import * as Express from "express";
+import Express from "express";
 import { Controller } from "../Controller";
 import axios from "axios";
 import sinon from "sinon";
-import { ControllerPathNotFound } from "core/exceptions/ControllerPathNotFound";
-// import { Post } from "../decorators/http";
+import { Post } from "../decorators/http";
 
 jest.mock("express", () => ({
   Router: () => ({
@@ -17,41 +16,19 @@ describe("Controller", () => {
     sinon.stub(axios, "get");
   });
 
-  it("does not work if user does not set path", async () => {
-    class SpecificController extends Controller {
-      create = async () => {
-        return Promise.resolve();
-      };
-
-      initialiseRoutes() {
-        this.router.post("/task/create", this.create);
-      }
-    }
-
-    const router = Express.Router();
-
-    expect(() => new SpecificController(router)).toThrow(
-      ControllerPathNotFound
-    );
-  });
-
-  it.only("works when user sets path", async () => {
-    @Controller("/path")
-    class SpecificController extends Controller {
-      create = async () => {
-        return Promise.resolve();
-      };
-
-      initialiseRoutes() {
-        this.router.post("/task/create", this.create);
-      }
-    }
-
-    const router = Express.Router();
+  it("works when user sets path", async () => {
     const root = "/task";
     const path = "/create";
+    const router = Express.Router();
 
-    new SpecificController(router);
+    class SpecificController extends Controller {
+      @Post(path)
+      async create() {
+        return Promise.resolve();
+      }
+    }
+
+    new SpecificController(root, router);
 
     await axios.post("/task/create");
 
@@ -60,40 +37,40 @@ describe("Controller", () => {
     );
   });
 
-  // it("initialises decorated routes properly", async () => {
-  //   const root = "/root";
-  //   const secondRoot = "/root2";
-  //   const link = "/path";
-  //   const secondLink = "/path2";
+  it("initialises decorated routes properly", async () => {
+    const root = "/root";
+    const secondRoot = "/root2";
+    const link = "/path";
+    const secondLink = "/path2";
 
-  //   class SpecificController extends Controller {
-  //     @Post(link)
-  //     async create() {
-  //       return Promise.resolve();
-  //     }
-  //     @Post(secondLink)
-  //     async cancel() {
-  //       return Promise.resolve();
-  //     }
-  //   }
+    class SpecificController extends Controller {
+      @Post(link)
+      async create() {
+        return Promise.resolve();
+      }
+      @Post(secondLink)
+      async cancel() {
+        return Promise.resolve();
+      }
+    }
 
-  //   class AnotherController extends Controller {}
+    class AnotherController extends Controller {}
 
-  //   const router = express.Router();
-  //   const otherRouter = express.Router();
+    const router = Express.Router();
+    const otherRouter = Express.Router();
 
-  //   new SpecificController(root, router);
-  //   new AnotherController(secondRoot, otherRouter);
+    new SpecificController(root, router);
+    new AnotherController(secondRoot, otherRouter);
 
-  //   await axios.post(`${root}/${link}`);
-  //   await axios.post(`${root}/${secondLink}`);
+    await axios.post(`${root}/${link}`);
+    await axios.post(`${root}/${secondLink}`);
 
-  //   expect((router.post as jest.Mock).mock.calls[0]).toContain(
-  //     `${root}${link}`
-  //   );
-  //   expect((router.post as jest.Mock).mock.calls[1]).toContain(
-  //     `${root}${secondLink}`
-  //   );
-  //   expect(otherRouter.post).not.toHaveBeenCalled();
-  // });
+    expect((router.post as jest.Mock).mock.calls[0]).toContain(
+      `${root}${link}`
+    );
+    expect((router.post as jest.Mock).mock.calls[1]).toContain(
+      `${root}${secondLink}`
+    );
+    expect(otherRouter.post).not.toHaveBeenCalled();
+  });
 });

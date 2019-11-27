@@ -4,7 +4,7 @@ import Express, { Router } from "express";
 import { AppContext } from "../AppContext";
 import { CommandBus } from "../CommandBus";
 import { EventBus } from "../EventBus";
-import { ControllerBasePath } from "../decorators/ControllerBasePath";
+import { IControllerMetadata } from "../decorators/ControllerMetadata";
 import { ICommand } from "core/ICommand";
 import { CommandHandler } from "core/decorators/commands";
 import { ICommandHandler } from "core/ICommandHandler";
@@ -35,20 +35,23 @@ describe("Module", () => {
     expect(app.use).not.toHaveBeenCalled();
   });
 
-  it("should create a module successfully with controllers", () => {
+  it.only("should create a module successfully with controllers", () => {
     const app = Express();
     const router = Router();
     const commandBus = new CommandBus();
     const eventBus = new EventBus();
-    @ControllerBasePath("abc")
+
+    //Controller
+    @IControllerMetadata("abc")
     class RandomController extends Controller {}
     const appContext = new AppContext(app, commandBus, eventBus);
 
+    // Module
     const module = new Module([RandomController]);
 
     module.onInit(appContext);
 
-    expect(app.use).toHaveBeenCalledWith("/path", router);
+    expect(app.use).toHaveBeenCalledWith("abc", router);
   });
 
   it("should create a module successfully with controllers and command handlers", () => {
@@ -58,7 +61,7 @@ describe("Module", () => {
     const eventBus = new EventBus();
 
     // controller
-    @ControllerBasePath("/path")
+    @IControllerMetadata("/path")
     class RandomController extends Controller {}
 
     // command & handler

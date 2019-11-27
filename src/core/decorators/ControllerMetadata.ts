@@ -1,12 +1,13 @@
 import "reflect-metadata";
 import { Type } from "core/utils/Type";
 import { Controller } from "core/Controller";
+import { IControllerMetadata } from "../IControllerMetadata";
 export const CONTROLLER = "__controller__";
 
 type ControllerType = Type<Controller>;
 
-export function ControllerBasePath(path: string) {
+export function ControllerMetadata(metadata: IControllerMetadata) {
   return function controllerDecorator(target: ControllerType) {
-    Reflect.defineMetadata(CONTROLLER, path, target);
+    Reflect.defineMetadata(CONTROLLER, metadata, target);
   };
 }
