@@ -4,7 +4,7 @@ import Express, { Router } from "express";
 import { AppContext } from "../AppContext";
 import { CommandBus } from "../CommandBus";
 import { EventBus } from "../EventBus";
-import { IControllerMetadata } from "../decorators/ControllerMetadata";
+import { ControllerMetadata } from "../decorators/ControllerMetadata";
 import { ICommand } from "core/ICommand";
 import { CommandHandler } from "core/decorators/commands";
 import { ICommandHandler } from "core/ICommandHandler";
@@ -35,14 +35,14 @@ describe("Module", () => {
     expect(app.use).not.toHaveBeenCalled();
   });
 
-  it.only("should create a module successfully with controllers", () => {
+  it("should create a module successfully with controllers", () => {
     const app = Express();
-    const router = Router();
     const commandBus = new CommandBus();
     const eventBus = new EventBus();
+    const controllerMetadata = { path: "abc" };
 
     //Controller
-    @IControllerMetadata("abc")
+    @ControllerMetadata(controllerMetadata)
     class RandomController extends Controller {}
     const appContext = new AppContext(app, commandBus, eventBus);
 
@@ -51,7 +51,9 @@ describe("Module", () => {
 
     module.onInit(appContext);
 
-    expect(app.use).toHaveBeenCalledWith("abc", router);
+    expect((app.use as jest.Mock).mock.calls[0]).toContain(
+      controllerMetadata.path
+    );
   });
 
   it("should create a module successfully with controllers and command handlers", () => {
@@ -59,9 +61,10 @@ describe("Module", () => {
     const router = Router();
     const commandBus = new CommandBus();
     const eventBus = new EventBus();
+    const controllerMetadata = { path: "abc", router };
 
     // controller
-    @IControllerMetadata("/path")
+    @ControllerMetadata(controllerMetadata)
     class RandomController extends Controller {}
 
     // command & handler
@@ -83,6 +86,9 @@ describe("Module", () => {
 
     module.onInit(appContext);
 
-    expect(app.use).toHaveBeenCalledWith("/path", router);
+    expect(app.use).toHaveBeenCalledWith(
+      controllerMetadata.path,
+      controllerMetadata.router
+    );
   });
 });

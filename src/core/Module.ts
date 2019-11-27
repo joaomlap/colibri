@@ -10,6 +10,7 @@ import { EventBus } from "core/EventBus";
 import { COMMAND_HANDLER } from "core/decorators/commands";
 import { ICommandHandler } from "core/ICommandHandler";
 import { CONTROLLER } from "./decorators/ControllerMetadata";
+import { IControllerMetadata } from "./IControllerMetadata";
 // import { IModule } from "./IModule";
 
 type ControllerType = Type<Controller>;
@@ -32,8 +33,14 @@ export class Module {
   private initialiseControllers(app: Express.Application) {
     if (this.controllers && this.controllers.length) {
       this.controllers.forEach(ControllerClass => {
-        const path = Reflect.getMetadata(CONTROLLER, ControllerClass);
-        const controller = new ControllerClass(path);
+        const controllerMetadata: IControllerMetadata = Reflect.getMetadata(
+          CONTROLLER,
+          ControllerClass
+        );
+        const controller = new ControllerClass(
+          controllerMetadata.path,
+          controllerMetadata.router
+        );
 
         app.use(controller.path, controller.router);
       });
