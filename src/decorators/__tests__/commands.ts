@@ -1,6 +1,6 @@
 import { CommandHandler, COMMAND_HANDLER } from "../commands";
-import { ICommand } from "core/ICommand";
-import { ICommandHandler } from "core/ICommandHandler";
+import { ICommand } from "ICommand";
+import { ICommandHandler } from "ICommandHandler";
 
 describe("CommandHandler decorator", () => {
   it("should be able to define a command handler successfully", () => {

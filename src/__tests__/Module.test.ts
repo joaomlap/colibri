@@ -5,11 +5,11 @@ import { AppContext } from "../AppContext";
 import { CommandBus } from "../CommandBus";
 import { EventBus } from "../EventBus";
 import { ControllerMetadata } from "../decorators/ControllerMetadata";
-import { ICommand } from "core/ICommand";
-import { CommandHandler } from "core/decorators/commands";
-import { ICommandHandler } from "core/ICommandHandler";
+import { ICommand } from "ICommand";
+import { CommandHandler } from "decorators/commands";
+import { ICommandHandler } from "ICommandHandler";
 import { Ok } from "../Result";
-import { Controller } from "core/Controller";
+import { Controller } from "Controller";
 
 jest.mock("express", () => ({
   __esModule: true,

@@ -1,5 +1,5 @@
 import { IEvent } from "./IEvent";
-import { IEventStoreEvent } from "core/event-store/IEventStore";
+import { IEventStoreEvent } from "event-store/IEventStore";
 
 export abstract class Aggregate {
   id: string;

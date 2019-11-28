@@ -1,6 +1,6 @@
-import { ICommand } from "core/ICommand";
-import { ICommandHandler } from "core/ICommandHandler";
-import { Type } from "core/utils/Type";
+import { ICommand } from "ICommand";
+import { ICommandHandler } from "ICommandHandler";
+import { Type } from "utils/Type";
 import {
   TooManyCommandHandlersException,
   CommandHandlerNotFoundException

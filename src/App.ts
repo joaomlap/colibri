@@ -1,7 +1,7 @@
 import Express from "express";
 import { Module } from "./Module";
-import { CommandBus } from "core/CommandBus";
-import { EventBus } from "core/EventBus";
+import { CommandBus } from "CommandBus";
+import { EventBus } from "EventBus";
 import { AppContext } from "./AppContext";
 
 export type AppConfig = {

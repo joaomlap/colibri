@@ -1,6 +1,6 @@
 import "reflect-metadata";
-import { Type } from "core/utils/Type";
-import { Controller } from "core/Controller";
+import { Type } from "utils/Type";
+import { Controller } from "Controller";
 import { IControllerMetadata } from "../IControllerMetadata";
 export const CONTROLLER = "__controller__";
 

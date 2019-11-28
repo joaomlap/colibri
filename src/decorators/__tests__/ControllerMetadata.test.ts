@@ -1,7 +1,7 @@
 import Express from "express";
 import { ControllerMetadata, CONTROLLER } from "../ControllerMetadata";
 import { Controller } from "../../Controller";
-import { IControllerMetadata } from "core/IControllerMetadata";
+import { IControllerMetadata } from "IControllerMetadata";
 
 jest.mock("../../Controller");
 
