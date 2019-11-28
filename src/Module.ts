@@ -1,4 +1,3 @@
-import "reflect-metadata";
 import Express from "express";
 import { Type } from "./utils/Type";
 import { Controller } from "Controller";

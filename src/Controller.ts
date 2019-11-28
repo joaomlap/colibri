@@ -1,4 +1,3 @@
-import "reflect-metadata";
 import { Router } from "express";
 import { httpMethods, httpDecoratorMetaData } from "./decorators/http";
 

@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import { CommandHandler, COMMAND_HANDLER } from "../commands";
 import { ICommand } from "ICommand";
 import { ICommandHandler } from "ICommandHandler";

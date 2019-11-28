@@ -1,4 +1,3 @@
-import "reflect-metadata";
 import { ICommand } from "../ICommand";
 import { Type } from "utils/Type";
 import { ICommandHandler } from "../ICommandHandler";

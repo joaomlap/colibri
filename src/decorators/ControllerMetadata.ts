@@ -1,4 +1,3 @@
-import "reflect-metadata";
 import { Type } from "utils/Type";
 import { Controller } from "Controller";
 import { IControllerMetadata } from "../IControllerMetadata";

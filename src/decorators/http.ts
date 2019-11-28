@@ -1,4 +1,3 @@
-import "reflect-metadata";
 import Express from "express";
 
 export const httpMethods = Object.freeze({
