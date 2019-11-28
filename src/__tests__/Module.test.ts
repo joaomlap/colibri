@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import { Module } from "../Module";
 import Express, { Router } from "express";
 // import { Controller } from "../Controller";

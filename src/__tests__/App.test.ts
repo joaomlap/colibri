@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import Express from "express";
 import { App } from "../App";
 import { Module } from "../Module";

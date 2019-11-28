@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import { Result, Ok, Err } from "../Result";
 
 const enum respond {

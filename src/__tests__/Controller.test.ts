@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import Express from "express";
 import { Controller } from "../Controller";
 import axios from "axios";

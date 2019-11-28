@@ -1,12 +1,30 @@
-export const INJECT = "__INJECT__";
+export const INJECT_DEPENDENCIES = "__INJECT_DEPENDENCIES__";
 
-export function Inject() {
+export function Inject<T = any>(token?: T) {
   return (
     target: Object,
-    propertyKey: string | symbol
-    // parameterIndex: number
+    propertyKey: string | symbol,
+    parameterIndex: number
   ) => {
-    const token = Reflect.getMetadata("design:type", target, propertyKey);
-    console.log(token);
+    if (parameterIndex === undefined || parameterIndex === -1) {
+      throw new Error("misuse of inject decorator");
+    }
+
+    const paramTypes = Reflect.getMetadata(
+      "design:paramtypes",
+      target,
+      propertyKey
+    );
+    const paramType = token || paramTypes[parameterIndex];
+
+    Reflect.defineMetadata(
+      INJECT_DEPENDENCIES,
+      {
+        propertyKey,
+        parameterIndex,
+        paramType
+      },
+      target.constructor
+    );
   };
 }

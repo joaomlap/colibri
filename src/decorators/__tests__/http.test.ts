@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import Express from "express";
 import { Get, Post, httpMethods, httpDecoratorMetaData } from "../http";
 import sinon from "sinon";
