@@ -21,6 +21,8 @@ jest.mock("express", () => ({
   })
 }));
 
+jest.mock("../CommandBus");
+
 describe("Module", () => {
   it("should create an empty module successfully", () => {
     const app = Express();
@@ -90,5 +92,13 @@ describe("Module", () => {
       controllerMetadata.path,
       controllerMetadata.router
     );
+
+    expect(commandBus.registerHandler).toHaveBeenCalledTimes(1);
+    expect((commandBus.registerHandler as jest.Mock).mock.calls[0]).toContain(
+      RandomCommand
+    );
+    expect(
+      (commandBus.registerHandler as jest.Mock).mock.calls[0][1]
+    ).toBeInstanceOf(RandomCommandHandler);
   });
 });

@@ -9,7 +9,6 @@ type CommandHandlerType = Type<ICommandHandler>;
 
 export function CommandHandler(command: ICommand) {
   return function(target: CommandHandlerType) {
-    console.log("target", target);
     Reflect.defineMetadata(COMMAND_HANDLER, command, target);
   };
 }

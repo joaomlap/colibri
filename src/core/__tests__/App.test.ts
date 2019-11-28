@@ -43,10 +43,7 @@ describe("App", () => {
 
   it("should create an application with middleware and modules", async () => {
     const fakeMiddleware = () => {};
-    class FakeModule extends Module {
-      registerCommandHandlers() {}
-    }
-    const fakeModule = new FakeModule();
+    const fakeModule = new Module();
 
     const { expressApp, app } = getMocks([fakeMiddleware], [fakeModule]);
 
