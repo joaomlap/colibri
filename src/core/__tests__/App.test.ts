@@ -15,9 +15,15 @@ function getMocks(
 ) {
   const expressApp = Express();
 
+  const appConfig = {
+    expressApp,
+    middlewares,
+    modules
+  };
+
   return {
     expressApp,
-    app: new App(expressApp, middlewares, modules)
+    app: new App(appConfig)
   };
 }
 
