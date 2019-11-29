@@ -17,13 +17,21 @@ export function Inject<T = any>(token?: T) {
     );
     const paramType = token || paramTypes[parameterIndex];
 
+    const existingDependencies = Reflect.getMetadata(
+      INJECT_DEPENDENCIES,
+      target.constructor
+    );
+
     Reflect.defineMetadata(
       INJECT_DEPENDENCIES,
-      {
-        propertyKey,
-        parameterIndex,
-        paramType
-      },
+      [
+        ...(existingDependencies || []),
+        {
+          propertyKey,
+          parameterIndex,
+          paramType
+        }
+      ],
       target.constructor
     );
   };

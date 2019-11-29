@@ -11,10 +11,12 @@ describe("Inject decorator", () => {
 
     new Test();
 
-    expect(Reflect.getMetadata(INJECT_DEPENDENCIES, Test)).toEqual({
-      propertyKey: "testFn",
-      parameterIndex: 0,
-      paramType: String
-    });
+    expect(Reflect.getMetadata(INJECT_DEPENDENCIES, Test)).toEqual([
+      {
+        propertyKey: "testFn",
+        parameterIndex: 0,
+        paramType: String
+      }
+    ]);
   });
 });
