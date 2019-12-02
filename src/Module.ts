@@ -10,6 +10,10 @@ import { COMMAND_HANDLER } from "decorators/commands";
 import { ICommandHandler } from "ICommandHandler";
 import { CONTROLLER } from "./decorators/ControllerMetadata";
 import { IControllerMetadata } from "./IControllerMetadata";
+// import { INJECTABLES } from "decorators/Injectable";
+import { INJECT_DEPENDENCIES } from "decorators/Inject";
+import { MODULE } from "decorators/ModuleMetadata";
+import { INJECTABLES } from "decorators/Injectable";
 // import { IModule } from "./IModule";
 
 type ControllerType = Type<Controller>;
@@ -51,6 +55,18 @@ export class Module {
       this.commandHandlers.forEach((Handler: CommandHandlerType) => {
         const CommandClass = Reflect.getMetadata(COMMAND_HANDLER, Handler);
 
+        const { injectables } = Reflect.getMetadata(MODULE, this.constructor);
+
+        injectables.forEach((injectable: Function) => {
+          const injectableMetadata = Reflect.getMetadata(
+            INJECTABLES,
+            injectable
+          );
+          console.log(injectableMetadata);
+        });
+        console.log(
+          Reflect.getMetadata(INJECT_DEPENDENCIES, Handler.constructor)
+        );
         commandBus.registerHandler(CommandClass, new Handler());
       });
     }

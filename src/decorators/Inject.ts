@@ -1,38 +1,81 @@
-export const INJECT_DEPENDENCIES = "__INJECT_DEPENDENCIES__";
+import { InjectParamOutsideConstructor } from "exceptions/InjectParamOutsideConstructor";
 
-export function Inject<T = any>(token?: T) {
+export const INJECT_CONSTRUCTOR_DEPS = "__INJECT_CONSTRUCTOR_DEPS__";
+export const INJECT_FIELD_DEPS = "__INJECT_FIELD_DEPS__";
+
+export function injectInClassProperty(
+  target: Object,
+  propertyKey: string | symbol
+) {
+  const propertyType = Reflect.getMetadata("design:type", target, propertyKey);
+
+  const existingDependencies = Reflect.getMetadata(
+    INJECT_FIELD_DEPS,
+    target.constructor
+  );
+
+  Reflect.defineMetadata(
+    INJECT_FIELD_DEPS,
+    [
+      ...(existingDependencies || []),
+      {
+        propertyKey,
+        propertyType
+      }
+    ],
+    target.constructor
+  );
+}
+
+export function injectInClassConstructor(
+  target: Object,
+  propertyKey: string | symbol,
+  parameterIndex: number
+) {
+  // when property key is undefined and target constructor
+  // is Function, it means we have to inject the property
+  // in the constructor
+  if (propertyKey || target.constructor !== Function) {
+    // todo
+    throw new InjectParamOutsideConstructor();
+  }
+
+  const paramTypes =
+    Reflect.getMetadata("design:paramtypes", target, propertyKey) || [];
+  const parameterType = paramTypes[parameterIndex];
+
+  const existingDependencies = Reflect.getMetadata(
+    INJECT_CONSTRUCTOR_DEPS,
+    target
+  );
+
+  Reflect.defineMetadata(
+    INJECT_CONSTRUCTOR_DEPS,
+    [
+      ...(existingDependencies || []),
+      {
+        parameterIndex,
+        parameterType
+      }
+    ],
+    target
+  );
+}
+
+export function Inject() {
   return (
     target: Object,
     propertyKey: string | symbol,
-    parameterIndex: number
+    parameterIndex?: number
   ) => {
-    if (parameterIndex === undefined || parameterIndex === -1) {
-      throw new Error("misuse of inject decorator");
+    if (
+      parameterIndex === undefined ||
+      typeof parameterIndex !== "number" ||
+      parameterIndex === -1
+    ) {
+      return injectInClassProperty(target, propertyKey);
+    } else {
+      return injectInClassConstructor(target, propertyKey, parameterIndex);
     }
-
-    const paramTypes = Reflect.getMetadata(
-      "design:paramtypes",
-      target,
-      propertyKey
-    );
-    const paramType = token || paramTypes[parameterIndex];
-
-    const existingDependencies = Reflect.getMetadata(
-      INJECT_DEPENDENCIES,
-      target.constructor
-    );
-
-    Reflect.defineMetadata(
-      INJECT_DEPENDENCIES,
-      [
-        ...(existingDependencies || []),
-        {
-          propertyKey,
-          parameterIndex,
-          paramType
-        }
-      ],
-      target.constructor
-    );
   };
 }
