@@ -1,7 +1,7 @@
 import { Response, Ok, Err } from "./node_modules/core/Response";
 import axios, { AxiosRequestConfig, AxiosError } from "axios";
 import { IEvent } from "./node_modules/core/IEvent";
-import { serialiseEvent } from "./node_modules/core/event-store/helpers/serialiseEvent";
+import { serialiseEvent } from "./node_modules/core/event-store/ultis/serialiseEvent";
 import FeedParser from "feedparser";
 import {
   IEventStore,
