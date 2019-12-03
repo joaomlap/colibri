@@ -26,20 +26,33 @@ export function injector(constructor: Newable, injectables: Newable[]) {
   console.log({ depsToInjectAsFields, depsToInjectInConstructor });
 
   if (Array.isArray(depsToInjectAsFields)) {
-    depsToInjectAsFields.forEach(_ => {});
+    // TODO interface for class field dependency
+    depsToInjectAsFields.forEach(dep => {
+      const Injectable = map.get(dep.propertyType.name);
+
+      if (!Injectable) {
+        // TODO change to named exception
+        throw new Error("no injectable found in module");
+      }
+
+      // TODO change to recursive injector call to inject injectable :D
+      constructor.prototype[dep.propertyKey] = new Injectable();
+    });
   }
 
   if (Array.isArray(depsToInjectInConstructor)) {
     const args: any[] = [];
 
+    // TODO interface for class constructor property
     depsToInjectInConstructor.forEach(dep => {
       const Injectable = map.get(dep.parameterType.name);
 
       if (!Injectable) {
-        // todo
+        // TODO change to named exception
         throw new Error("no injectable found in module");
       }
 
+      // TODO change to recursive injector call to inject injectable :D
       args[dep.parameterIndex] = new Injectable();
     });
 
