@@ -6,6 +6,7 @@ import { InfiniteInjectingLoop } from "exceptions/InfiniteInjectingLoop";
 import { MockService } from "./__mocks__/MockService";
 import { WrongService } from "./__mocks__/WrongService";
 import { InjectingException } from "exceptions/InjectingException";
+import { UnbuildableDependency } from "exceptions/UnbuildableDependency";
 
 describe("injector", () => {
   // mock functions
@@ -87,5 +88,28 @@ describe("injector", () => {
       const WrongCtor = injector(MockService, [MockService, WrongService]);
       new WrongCtor();
     }).toThrow(InjectingException);
+  });
+
+  it("should throw when an injectable needs more than what's injected", () => {
+    @Injectable()
+    class SmallService {}
+
+    @Injectable()
+    class BigService {
+      constructor(service: SmallService) {
+        serviceFake(service);
+      }
+    }
+
+    class Consumer {
+      constructor(@Inject() service: BigService) {
+        serviceFake(service);
+      }
+    }
+
+    expect(() => {
+      const WrongCtor = injector(Consumer, [SmallService, BigService]);
+      new WrongCtor();
+    }).toThrow(UnbuildableDependency);
   });
 });

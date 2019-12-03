@@ -55,10 +55,8 @@ export class Module {
         const CommandClass = Reflect.getMetadata(COMMAND_HANDLER, Handler);
         const { injectables } = Reflect.getMetadata(MODULE, this.constructor);
 
-        console.log({ injectables });
-
-        const boundHandler = injector(Handler, injectables);
-        commandBus.registerHandler(CommandClass, new boundHandler());
+        const HandlerCtor = injector(Handler, injectables);
+        commandBus.registerHandler(CommandClass, new HandlerCtor());
       });
     }
   }
