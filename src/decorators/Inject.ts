@@ -1,4 +1,4 @@
-import { InjectParamOutsideConstructor } from "exceptions/InjectParamOutsideConstructor";
+import { InjectPropOutsideConstructor } from "exceptions/InjectPropOutsideConstructor";
 
 export const INJECT_CONSTRUCTOR_DEPS = "__INJECT_CONSTRUCTOR_DEPS__";
 export const INJECT_FIELD_DEPS = "__INJECT_FIELD_DEPS__";
@@ -30,19 +30,19 @@ export function injectInClassProperty(
 export function injectInClassConstructor(
   target: Object,
   propertyKey: string | symbol,
-  parameterIndex: number
+  propertyIndex: number
 ) {
   // when property key is undefined and target constructor
   // is Function, it means we have to inject the property
   // in the constructor
   if (propertyKey || target.constructor !== Function) {
     // todo
-    throw new InjectParamOutsideConstructor();
+    throw new InjectPropOutsideConstructor();
   }
 
   const paramTypes =
     Reflect.getMetadata("design:paramtypes", target, propertyKey) || [];
-  const parameterType = paramTypes[parameterIndex];
+  const propertyType = paramTypes[propertyIndex];
 
   const existingDependencies = Reflect.getMetadata(
     INJECT_CONSTRUCTOR_DEPS,
@@ -54,8 +54,8 @@ export function injectInClassConstructor(
     [
       ...(existingDependencies || []),
       {
-        parameterIndex,
-        parameterType
+        propertyIndex,
+        propertyType
       }
     ],
     target
@@ -66,16 +66,16 @@ export function Inject() {
   return (
     target: Object,
     propertyKey: string | symbol,
-    parameterIndex?: number
+    propertyIndex?: number
   ) => {
     if (
-      parameterIndex === undefined ||
-      typeof parameterIndex !== "number" ||
-      parameterIndex === -1
+      propertyIndex === undefined ||
+      typeof propertyIndex !== "number" ||
+      propertyIndex === -1
     ) {
       return injectInClassProperty(target, propertyKey);
     } else {
-      return injectInClassConstructor(target, propertyKey, parameterIndex);
+      return injectInClassConstructor(target, propertyKey, propertyIndex);
     }
   };
 }

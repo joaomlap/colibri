@@ -1,3 +1,3 @@
-export interface Newable {
+export interface INewable {
   new (...args: any[]): any;
 }
