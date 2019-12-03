@@ -16,9 +16,11 @@ function createInjectablesMap(injectables: INewable[]): Map<string, INewable> {
 
 function getInjectable(
   constructor: INewable,
-  name: string,
+  dep: IDependency,
   map: Map<string, INewable>
 ) {
+  const name = dep && dep.propertyType && dep.propertyType.name;
+
   if (!name) {
     throw new InjectingException();
   }
@@ -43,10 +45,8 @@ function getConstructorWithInjectedFields(
 
   if (Array.isArray(depsToInjectAsFields)) {
     depsToInjectAsFields.forEach((dep: IDependency) => {
-      const depName = dep && dep.propertyType && dep.propertyType.name;
-      const Injectable = getInjectable(constructor, depName, map);
+      const InjectableCtor = getInjectable(constructor, dep, map);
 
-      const InjectableCtor = getInjectedConstructor(Injectable, map);
       result.prototype[dep.propertyKey] = new InjectableCtor();
     });
   }
@@ -68,10 +68,7 @@ function getConstructorWithInjectedProps(
 
   if (Array.isArray(depsToInjectInConstructor)) {
     depsToInjectInConstructor.forEach((dep: IDependency) => {
-      const depName = dep && dep.propertyType && dep.propertyType.name;
-      const Injectable = getInjectable(constructor, depName, map);
-
-      const InjectableCtor = getInjectedConstructor(Injectable, map);
+      const InjectableCtor = getInjectable(constructor, dep, map);
 
       if (typeof dep.propertyIndex === "number") {
         args[dep.propertyIndex] = new InjectableCtor();
