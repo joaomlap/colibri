@@ -53,7 +53,9 @@ export class Module {
     if (this.commandHandlers && this.commandHandlers.length) {
       this.commandHandlers.forEach((Handler: CommandHandlerType) => {
         const CommandClass = Reflect.getMetadata(COMMAND_HANDLER, Handler);
-        const { injectables } = Reflect.getMetadata(MODULE, this.constructor);
+        const moduleMetadata = Reflect.getMetadata(MODULE, this.constructor);
+        const injectables =
+          (moduleMetadata && moduleMetadata.injectables) || [];
 
         const HandlerCtor = injector(Handler, injectables);
         commandBus.registerHandler(CommandClass, new HandlerCtor());

@@ -14,6 +14,7 @@ import { Controller } from "Controller";
 import { Injectable } from "decorators/Injectable";
 import { ModuleMetadata } from "decorators/ModuleMetadata";
 import { Inject } from "decorators/Inject";
+import * as injectorModule from "../utils/injector";
 
 jest.mock("express", () => ({
   __esModule: true,
@@ -26,6 +27,8 @@ jest.mock("express", () => ({
 }));
 
 jest.mock("../CommandBus");
+
+jest.spyOn(injectorModule, "injector");
 
 describe("Module", () => {
   it("should create an empty module successfully", () => {
@@ -62,7 +65,7 @@ describe("Module", () => {
     );
   });
 
-  it("should create a module successfully with controllers and command handlers", () => {
+  it.only("should create a module successfully with controllers and command handlers", () => {
     const app = Express();
     const router = Router();
     const commandBus = new CommandBus();
@@ -105,14 +108,11 @@ describe("Module", () => {
     ).toBeInstanceOf(RandomCommandHandler);
   });
 
-  it.only("should inject correctly dependencies", () => {
+  it("should inject correctly dependencies", () => {
     // setup
     const app = Express();
     const commandBus = new CommandBus();
     const eventBus = new EventBus();
-
-    // mocks
-    const fakeFn = jest.fn();
 
     // injectable service
     @Injectable()
@@ -123,9 +123,7 @@ describe("Module", () => {
 
     @CommandHandler(RandomCommand)
     class GreatCommandHandler implements ICommandHandler {
-      constructor(@Inject() public service: GreatService) {
-        fakeFn(service);
-      }
+      constructor(@Inject() public service: GreatService) {}
 
       execute(_: RandomCommand) {
         return Promise.resolve(new Ok("oki-doki"));
@@ -144,6 +142,8 @@ describe("Module", () => {
 
     greatModule.onInit(appContext);
 
-    expect(fakeFn.mock.calls[0][0]).toBeInstanceOf(GreatService);
+    expect(injectorModule.injector).toHaveBeenCalledWith(GreatCommandHandler, [
+      GreatService
+    ]);
   });
 });
