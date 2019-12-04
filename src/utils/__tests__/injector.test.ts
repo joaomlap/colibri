@@ -3,8 +3,8 @@ import { injector } from "../injector";
 import { Injectable } from "decorators/Injectable";
 import { Inject } from "decorators/Inject";
 import { InfiniteInjectingLoop } from "exceptions/InfiniteInjectingLoop";
-import { MockService } from "./__mocks__/MockService";
-import { WrongService } from "./__mocks__/WrongService";
+import { MockService } from "../__mocks__/MockService";
+import { WrongService } from "../__mocks__/WrongService";
 import { InjectingException } from "exceptions/InjectingException";
 import { UnbuildableDependency } from "exceptions/UnbuildableDependency";
 

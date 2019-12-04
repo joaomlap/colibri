@@ -65,7 +65,7 @@ describe("Module", () => {
     );
   });
 
-  it.only("should create a module successfully with controllers and command handlers", () => {
+  it("should create a module successfully with controllers and command handlers", () => {
     const app = Express();
     const router = Router();
     const commandBus = new CommandBus();
