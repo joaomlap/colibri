@@ -1,4 +1,4 @@
-import { Aggregate } from "core/Aggregate";
+import { Aggregate } from "@src/Aggregate";
 import { Task, TaskType, TaskStatus, TaskUrgency } from "./TaskTypes";
 import { IEvent } from "core/IEvent";
 import { TaskCreated } from "./events/TaskCreated";
