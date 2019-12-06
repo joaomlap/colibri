@@ -1,5 +1,6 @@
 import { Aggregate } from "../Aggregate";
 import { IEvent } from "IEvent";
+import { Handle } from "decorators/Handle";
 
 describe("Aggregate", () => {
   it("should create an empty aggregate successfully", () => {
@@ -34,6 +35,19 @@ describe("Aggregate", () => {
 
       expect(aggregate.getUncommittedEvents()).toEqual([]);
     });
+  });
+
+  describe("mutators", () => {
+    class OneEvent implements IEvent {}
+    class MyAggregate extends Aggregate {}
+
+    const aggregate = new MyAggregate();
+    const oneEvent = new OneEvent();
+
+    class MyAggregate extends Aggregate {
+      @Handle(OneEvent)
+      eventHandler(event: OneEvent) {}
+    }
   });
 
   describe("loadFromStream", () => {});

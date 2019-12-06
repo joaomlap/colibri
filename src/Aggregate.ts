@@ -1,10 +1,31 @@
 import { IEvent } from "./IEvent";
 import { IEventStoreEvent } from "event-store/IEventStore";
+import { AGGREGATE_EVENT_HANDLER } from "decorators/Handle";
 
-export abstract class Aggregate {
+export class Aggregate {
   id: string;
   protected events: IEvent[] = [];
   protected mutators = new Map<string, Function>();
+
+  constructor(eventStream: IEvent[] = []) {
+    super();
+
+    const metadata = Reflect.getMetadata(
+      AGGREGATE_EVENT_HANDLER,
+      this.constructor
+    );
+    console.log(metadata);
+
+    // apply functions
+    this.mutators.set(this.getClassName(TaskCreated), this.applyTaskCreated);
+    this.mutators.set(
+      this.getClassName(TaskCancelled),
+      this.applyTaskCancelled
+    );
+
+    // construct from event stream
+    eventStream.forEach(event => this.apply(event));
+  }
 
   private _version: number;
 
@@ -35,7 +56,7 @@ export abstract class Aggregate {
     events.forEach(e => this.applyEvent(e, false));
   }
 
-  apply(event: IEvent) {
+  private apply(event: IEvent) {
     const eventClassName = event && event.constructor && event.constructor.name;
     const applyFn = this.mutators.get(eventClassName);
 
