@@ -8,20 +8,21 @@ export class Aggregate {
   protected mutators = new Map<string, Function>();
 
   constructor(eventStream: IEvent[] = []) {
-    super();
-
-    const metadata = Reflect.getMetadata(
+    const eventHandlersMap = Reflect.getMetadata(
       AGGREGATE_EVENT_HANDLER,
-      this.constructor
+      this
     );
-    console.log(metadata);
+
+    if (eventHandlersMap && eventHandlersMap instanceof Map) {
+      this.mutators = eventHandlersMap;
+    }
 
     // apply functions
-    this.mutators.set(this.getClassName(TaskCreated), this.applyTaskCreated);
-    this.mutators.set(
-      this.getClassName(TaskCancelled),
-      this.applyTaskCancelled
-    );
+    // this.mutators.set(this.getClassName(TaskCreated), this.applyTaskCreated);
+    // this.mutators.set(
+    //   this.getClassName(TaskCancelled),
+    //   this.applyTaskCancelled
+    // );
 
     // construct from event stream
     eventStream.forEach(event => this.apply(event));

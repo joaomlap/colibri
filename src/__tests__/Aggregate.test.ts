@@ -1,3 +1,4 @@
+import "reflect-metadata"
 import { Aggregate } from "../Aggregate";
 import { IEvent } from "IEvent";
 import { Handle } from "decorators/Handle";
@@ -38,16 +39,24 @@ describe("Aggregate", () => {
   });
 
   describe("mutators", () => {
-    class OneEvent implements IEvent {}
-    class MyAggregate extends Aggregate {}
-
-    const aggregate = new MyAggregate();
-    const oneEvent = new OneEvent();
-
-    class MyAggregate extends Aggregate {
-      @Handle(OneEvent)
-      eventHandler(event: OneEvent) {}
-    }
+    it.only("should set the mutators correctly", () => {
+      const fakeFn = jest.fn();
+      class OneEvent implements IEvent {}
+  
+      class MyAggregate extends Aggregate {
+        @Handle(OneEvent)
+        eventHandler(_: OneEvent) {
+          fakeFn();
+        }
+      }
+  
+      const aggregate = new MyAggregate();
+      const oneEvent = new OneEvent();
+  
+      aggregate.applyEvent(oneEvent);
+  
+      expect(fakeFn).toHaveBeenCalled();
+    })
   });
 
   describe("loadFromStream", () => {});
