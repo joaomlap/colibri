@@ -36,7 +36,7 @@ export class Repository<A extends Aggregate> {
     if (response.isOk()) {
       result = new Ok(aggregate);
     } else {
-      result = new Err(response.get());
+      result = new Err(response.get() as string);
     }
 
     aggregate.markEventsAsCommited();
