@@ -17,13 +17,6 @@ export class Aggregate {
       this.mutators = eventHandlersMap;
     }
 
-    // apply functions
-    // this.mutators.set(this.getClassName(TaskCreated), this.applyTaskCreated);
-    // this.mutators.set(
-    //   this.getClassName(TaskCancelled),
-    //   this.applyTaskCancelled
-    // );
-
     // construct from event stream
     eventStream.forEach(event => this.apply(event));
   }

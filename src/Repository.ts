@@ -1,23 +1,42 @@
 import { Aggregate } from "./Aggregate";
-import { IEventStore } from "./event-store/IEventStore";
-import { Response, Ok, Err } from "./Response";
+import { IEventStore, IEventStoreEvent } from "./event-store/IEventStore";
+import { Result, Ok, Err } from "./Result";
+import { Type } from "utils/Type";
 
-export abstract class Repository {
-  constructor(protected eventStore: IEventStore) {}
+export class Repository<A extends Aggregate> {
+  constructor(
+    protected eventStore: IEventStore,
+    protected AggregateCtor: Type<A>
+  ) {}
 
-  abstract async load(aggregateId: string): Promise<Response<Aggregate>>;
+  async load(aggregateId: string): Promise<Result<A>> {
+    let result: Result<A>;
 
-  async save<T extends Aggregate>(aggregate: T): Promise<Response<Aggregate>> {
+    const response = await this.eventStore.load(aggregateId);
+
+    if (response.isOk()) {
+      const events = response.get() as IEventStoreEvent[];
+      const aggregate = new this.AggregateCtor();
+      aggregate.loadFromEventStream(events);
+      result = new Ok(aggregate as A);
+    } else {
+      result = new Err(response.get() as string);
+    }
+
+    return result;
+  }
+
+  async save<T extends A>(aggregate: T): Promise<Result<A>> {
     const response = await this.eventStore.publish(
       aggregate.id,
       aggregate.getUncommittedEvents()
     );
-    let result: Response<Aggregate>;
+    let result: Result<A>;
 
     if (response.isOk()) {
-      result = new Ok(response.status, aggregate);
+      result = new Ok(aggregate);
     } else {
-      result = new Err(response.status, response.get());
+      result = new Err(response.get());
     }
 
     aggregate.markEventsAsCommited();

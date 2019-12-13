@@ -1,5 +1,5 @@
 import { IEvent } from "../IEvent";
-import { Response } from "Response";
+import { Result } from "Result";
 
 export interface IEventStoreEvent {
   eventId: string;
@@ -8,11 +8,11 @@ export interface IEventStoreEvent {
 }
 
 export interface IEventStore {
-  load(id: string): Promise<Response<IEventStoreEvent[]>>;
-  publish(aggregateId: string, events: IEvent[]): Promise<Response<string>>;
+  load(id: string): Promise<Result<IEventStoreEvent[]>>;
+  publish(aggregateId: string, events: IEvent[]): Promise<Result<string>>;
 }
 
-export type IEventStoreResponse = {
+export type IEventStoreResult = {
   status: number;
   description: string;
   data?: any;

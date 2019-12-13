@@ -39,7 +39,7 @@ describe("Aggregate", () => {
   });
 
   describe("mutators", () => {
-    it.only("should set the mutators correctly", () => {
+    it("should set the mutators correctly", () => {
       const fakeFn = jest.fn();
       class OneEvent implements IEvent {}
   
@@ -56,8 +56,18 @@ describe("Aggregate", () => {
       aggregate.applyEvent(oneEvent);
   
       expect(fakeFn).toHaveBeenCalled();
-    })
+    });
   });
 
-  describe("loadFromStream", () => {});
+  // TODO
+  describe("serialised events", () => {
+    describe("applySerialisedEvent", () => {
+      it("should apply event serialised events correctly", () => {
+
+      })
+    })
+    describe("loadFromEventStream", () => {
+      it("should load and apply events correctly", () => {})
+    })
+  });
 });
