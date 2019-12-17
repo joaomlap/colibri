@@ -43,7 +43,8 @@
     "preset": "ts-jest",
     "testEnvironment": "node",
     "collectCoverageFrom": [
-      "src/**/*.{ts,js}"
+      "src/**/*.{ts,js}",
+      "!src/**/exceptions/**/*.{ts,js}"
     ],
     "roots": [
       "src"
