@@ -1,9 +1,12 @@
-import { Response, Ok, Err } from "core/Response";
+import { Response, Ok, Err } from "../../src/Response";
 import axios, { AxiosRequestConfig, AxiosError } from "axios";
-import { IEvent } from "core/IEvent";
-import { serialiseEvent } from "core/event-store/helpers/serialiseEvent";
+import { IEvent } from "../../src/IEvent";
+import { serialiseEvent } from "../../src/event-store/utils/serialiseEvent";
 import FeedParser from "feedparser";
-import { IEventStore, IEventStoreEvent } from "core/event-store/IEventStore";
+import {
+  IEventStore,
+  IEventStoreEvent
+} from "../../src/event-store/IEventStore";
 
 type EventStoreCredentials = {
   username: string;

@@ -1,14 +1,18 @@
-import App from "./App";
+import Express from "express";
+import { App } from "../../src/App";
 import bodyParser from "body-parser";
-import { TaskModule } from "./task/TaskModule";
+import { Module } from "../../src/Module";
 
 function main() {
-  const port = parseInt(process.env.PORT || "4000", 10);
-  const middlewares = [bodyParser.json()];
-  const controllers = [new TaskModule()];
+  const expressApp = Express();
+  const middlewares = [
+    bodyParser.json(),
+    bodyParser.urlencoded({ extended: false })
+  ];
+  const Tasking = new Module();
+  const app = new App({ expressApp, middlewares, modules: [Tasking] });
 
-  const app = new App(port, middlewares, controllers);
-  app.listen();
+  app.listen(3001, () => console.log("Server running on port 3001"));
 }
 
 main();
