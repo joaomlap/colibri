@@ -1,5 +1,5 @@
 # colibri
-A super lightweight framework for Node.js, built with Typescript, Express and RxJs for Event Sourcing and CQRS (micro)services
+A WIP lightweight framework for Node.js, built with Typescript, Express and RxJs for Event Sourcing and CQRS (micro)services
 
 This project is not ready for production use!
 
